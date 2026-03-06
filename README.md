@@ -2,11 +2,11 @@
 
 1. Klonowanie repozytorium
 ```
-git clone https://github.com/thecookedhan/OE1.git
+https://github.com/thecookedhan/functionExtremumFinder.git
 ```
 2. Wejście do folderu aplikacji
 ```
-cd OE1
+cd functionExtremumFinder
 ```
 3. Instalacja wymaganych zależności
 ```
