@@ -120,6 +120,17 @@
                 </div>
             </div>
 
+            <div class="flex items-center justify-center">
+                <audio id="easter-egg-music" src="{{ url_for('static', filename='mikrokosmos.mp3') }}"></audio>
+                <button id="egg-btn" 
+                    title="Easter egg"
+                    class="w-12 h-16 bg-gradient-to-br from-pink-200 to-purple-300 rounded-[50%_50%_50%_50%_/_60%_60%_40%_40%] 
+                        shadow-lg shadow-purple-200/50 border border-white/60 transition-all duration-500 
+                        hover:scale-110 hover:rotate-12 active:scale-95 cursor-pointer flex items-center justify-center group">
+                    <i data-lucide="sparkles" class="w-4 h-4 text-white opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                </button>
+            </div>
+
             <div class="flex flex-wrap items-center justify-center gap-8">
                 <div class="text-center md:text-right">
                     <div class="text-[10px] uppercase font-bold text-gray-400 tracking-widest">Wersja</div>

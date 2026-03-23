@@ -64,3 +64,23 @@ body {
     border-left: none !important;
     padding-left: 0 !important;
 }
+
+/* Easter egg */
+#egg-btn {
+    box-shadow: 0 10px 20px -5px rgba(243, 170, 209, 0.5);
+}
+
+#egg-btn:hover {
+    filter: brightness(1.05);
+    box-shadow: 0 0 25px rgba(243, 170, 240, 0.6);
+}
+
+/* Animacja kołysanie */
+@keyframes egg-sway {
+    0%, 100% { transform: rotate(-5deg); }
+    50% { transform: rotate(5deg); }
+}
+
+#egg-btn:not(:active) {
+    animation: egg-sway 3s ease-in-out infinite;
+}

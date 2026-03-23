@@ -4,6 +4,24 @@ document.addEventListener('DOMContentLoaded', () => {
         lucide.createIcons();
     }
     setupDynamicInputs();
+
+    // easter egg hihi
+    const eggBtn = document.getElementById('egg-btn');
+    const audio = document.getElementById('easter-egg-music');
+
+    eggBtn?.addEventListener('click', () => {
+        if (audio.paused) {
+            audio.play().catch(e => console.log("interakcja wymagana do audio"));
+            eggBtn.classList.add('animate-bounce');
+        } else {
+            audio.pause();
+            eggBtn.classList.remove('animate-bounce');
+        }
+    });
+
+    audio.onended = () => {
+        eggBtn.classList.remove('animate-bounce');
+    }
 });
 
 let globalHistory = [];
