@@ -20,7 +20,10 @@ document.addEventListener('DOMContentLoaded', () => {
         "/static/music/spring_day.mp3",
         "/static/music/save_me.mp3",
         "/static/music/friends.mp3",
-        "/static/music/i_need_u.mp3"
+        "/static/music/i_need_u.mp3",
+        "/static/music/butterfly.mp3",
+        "/static/music/dna.mp3",
+        "/static/music/dynamite.mp3"
     ];
     let currentTrackIndex = 0;
     let globalHistory = []; 
@@ -117,35 +120,61 @@ document.addEventListener('DOMContentLoaded', () => {
         functionSelect?.addEventListener('change', (e) => updateVars(e.target.value));
         if (functionSelect) updateVars(functionSelect.value);
 
-        // selekcja, krzyżowanie, mutacja
-        const selEl = document.querySelector('select[name="selection"]');
+         // obsługa selekcji
+        const selectionSelect = document.querySelector('select[name="selection"]');
         const updateSelection = () => {
-            const val = selEl?.value;
-            document.getElementById('tournament-params')?.classList.toggle('hidden', val !== 'tournament');
-            document.getElementById('best-params')?.classList.toggle('hidden', val !== 'best');
+            const val = selectionSelect?.value;
+            const tournamentDiv = document.getElementById('tournament-params');
+            const bestDiv = document.getElementById('best-params');
+            if (tournamentDiv) tournamentDiv.classList.toggle('hidden', val !== 'tournament');
+            if (bestDiv) bestDiv.classList.toggle('hidden', val !== 'best');
         };
-        selEl?.addEventListener('change', updateSelection);
 
-        const crossEl = document.querySelector('select[name="crossover"]');
+        selectionSelect?.addEventListener('change', updateSelection);
+
+        // obsługa krzyżowania
+        const crossoverSelect = document.querySelector('select[name="crossover"]');
         const updateCrossover = () => {
-            document.getElementById('uniform-params')?.classList.toggle('hidden', crossEl?.value !== 'uniform');
-        };
-        crossEl?.addEventListener('change', updateCrossover);
+            const val = crossoverSelect?.value;
+            const uniformDiv = document.getElementById('uniform-params');
+            if (uniformDiv) uniformDiv.classList.toggle('hidden', val !== 'uniform');
 
-        const mutEl = document.querySelector('select[name="mutation"]');
+        };
+
+        crossoverSelect?.addEventListener('change', updateCrossover);
+
+        // obsługa mutacji
+        const mutationSelect = document.querySelector('select[name="mutation"]');
         const updateMutation = () => {
-            document.getElementById('bit-flip-params')?.classList.toggle('hidden', mutEl?.value !== 'bit_flip');
+            const val = mutationSelect?.value;
+            const bitFlipDiv = document.getElementById('bit-flip-params');
+            if (bitFlipDiv) bitFlipDiv.classList.toggle('hidden', val !== 'bit_flip');
         };
-        mutEl?.addEventListener('change', updateMutation);
 
-        // elita i inwersja
+        mutationSelect?.addEventListener('change', updateMutation);
+
+        // obsługa strategii elitarnej (pojawianie się pola pod przełącznikiem)
         const eliteToggle = document.getElementById('elite-toggle');
-        const updateElite = () => document.getElementById('elite-params')?.classList.toggle('hidden', !eliteToggle?.checked);
+        const eliteParams = document.getElementById('elite-params');
+        const updateElite = () => {
+            if (eliteParams && eliteToggle) {
+                eliteParams.classList.toggle('hidden', !eliteToggle.checked);
+            }
+        };
+
         eliteToggle?.addEventListener('change', updateElite);
 
-        const invToggle = document.getElementById('inversion-toggle');
-        const updateInversion = () => document.getElementById('inversion-params')?.classList.toggle('hidden', !invToggle?.checked);
-        invToggle?.addEventListener('change', updateInversion);
+        // obsługa operatora inwersji (pojawianie się pola pod przełącznikiem)
+        const inversionToggle = document.getElementById('inversion-toggle');
+        const inversionParams = document.getElementById('inversion-params');
+        const updateInversion = () => {
+            if (inversionParams && inversionToggle) {
+
+                inversionParams.classList.toggle('hidden', !inversionToggle.checked);
+            }
+        };
+
+        inversionToggle?.addEventListener('change', updateInversion);
 
         // wywołania początkowe
         updateSelection(); updateCrossover(); updateMutation(); updateElite(); updateInversion();
@@ -155,21 +184,62 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderChart(history) {
         const placeholder = document.getElementById('chart-placeholder');
         const plotDiv = document.getElementById('fitnessPlot');
+
         if (placeholder) placeholder.style.display = 'none';
         if (plotDiv) plotDiv.classList.remove('hidden');
 
         const traces = [
-            { x: history.map(d => d.epoch), y: history.map(d => d.bestFitness), name: 'Najlepsze', line: { color: '#3b82f6', width: 4 }, type: 'scatter', mode: 'lines' },
-            { x: history.map(d => d.epoch), y: history.map(d => d.averageFitness), name: 'Średnie', line: { color: '#ec4899', width: 2.5 }, type: 'scatter', mode: 'lines' }
+            {
+                x: history.map(d => d.epoch),
+                y: history.map(d => d.bestFitness),
+                name: 'Najlepsze',
+                line: { color: '#3b82f6', width: 4, shape: 'spline' },
+                type: 'scatter',
+                mode: 'lines'
+            },
+            {
+                x: history.map(d => d.epoch),
+                y: history.map(d => d.averageFitness),
+                name: 'Średnie',
+                line: { color: '#ec4899', width: 2.5 },
+                type: 'scatter',
+                mode: 'lines'
+            },
+            {
+                x: history.map(d => d.epoch),
+                y: history.map(d => d.worstFitness),
+                name: 'Najgorsze',
+                line: { color: '#633e6e', width: 1.5, dash: 'dot' },
+                type: 'scatter',
+                mode: 'lines',
+                opacity: 0.6
+            }
         ];
 
         const layout = {
-            height: 480, paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(255,255,255,0.05)',
-            margin: { t: 30, r: 30, l: 60, b: 60 }, hovermode: 'x unified',
-            xaxis: { title: 'Epoka' }, yaxis: { title: 'Przystosowanie', tickformat: '.4f' }
+            height: 480,
+            dragmode: 'pan',
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            plot_bgcolor: 'rgba(255,255,255,0.05)',
+            font: { family: 'Poppins, sans-serif', color: '#4b5563', size: 11 },
+            margin: { t: 30, r: 30, l: 60, b: 60 },
+            hovermode: 'x unified',
+            xaxis: {
+                gridcolor: 'rgba(0,0,0,0.05)',
+                title: { text: 'Epoka', font: { size: 12, weight: 600 } },
+                zeroline: false,
+                rangeslider: { visible: true, thickness: 0.05, bgcolor: 'rgba(255,255,255,0.1)' }
+            },
+            yaxis: {
+                gridcolor: 'rgba(0,0,0,0.05)',
+                title: { text: 'Wartość Przystosowania', font: { size: 12, weight: 600 } },
+                zeroline: false,
+                tickformat: '.4f'
+            },
+            legend: { orientation: 'h', x: 0.5, xanchor: 'center', y: -0.4 }
         };
 
-        Plotly.newPlot('fitnessPlot', traces, layout, { responsive: true, displaylogo: false });
+        Plotly.newPlot('fitnessPlot', traces, layout, { responsive: true, displaylogo: false, locale: 'pl' });
     }
 
     // renderowanie tabeli wyników
