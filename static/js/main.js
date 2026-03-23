@@ -217,26 +217,28 @@ document.addEventListener('DOMContentLoaded', () => {
         ];
 
         const layout = {
-            height: 480,
+            height: 500,
             dragmode: 'pan',
             paper_bgcolor: 'rgba(0,0,0,0)',
             plot_bgcolor: 'rgba(255,255,255,0.05)',
-            font: { family: 'Poppins, sans-serif', color: '#4b5563', size: 11 },
-            margin: { t: 30, r: 30, l: 60, b: 60 },
+            font: { family: 'Poppins, sans-serif', color: '#4b5563', size: 14 },
+            margin: { t: 40, r: 30, l: 80, b: 100 },
             hovermode: 'x unified',
             xaxis: {
                 gridcolor: 'rgba(0,0,0,0.05)',
-                title: { text: 'Epoka', font: { size: 12, weight: 600 } },
+                title: { text: 'Epoka', font: { size: 14, weight: 600 }, standoff: 20 },
                 zeroline: false,
-                rangeslider: { visible: true, thickness: 0.05, bgcolor: 'rgba(255,255,255,0.1)' }
+                rangeslider: { visible: true, thickness: 0.05, bgcolor: 'rgba(255,255,255,0.1)' },
+                automargin: true
             },
             yaxis: {
                 gridcolor: 'rgba(0,0,0,0.05)',
-                title: { text: 'Wartość Przystosowania', font: { size: 12, weight: 600 } },
+                title: { text: 'Wartość Przystosowania', font: { size: 14, weight: 600 }, standoff: 25 },
                 zeroline: false,
-                tickformat: '.4f'
+                tickformat: '.2f',
+                automargin: true
             },
-            legend: { orientation: 'h', x: 0.5, xanchor: 'center', y: -0.4 }
+            legend: { orientation: 'h', x: 0.5, xanchor: 'center', y: -0.5 }
         };
 
         Plotly.newPlot('fitnessPlot', traces, layout, { responsive: true, displaylogo: false, locale: 'pl' });
@@ -316,11 +318,52 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await res.json();
                 if (!res.ok || !data.success) throw new Error(data.error || "Błąd serwera");
 
+                // powrót na górę
+                window.scrollTo({
+                    top: 120,
+                    behavior: 'smooth'
+                })
+
+                // aktualizacja wykresu
                 globalHistory = data.history;
                 renderChart(data.history);
                 renderTable(data.best_individual);
                 document.getElementById('calc-time').innerText = `${data.execution_time || 0}s`;
                 document.getElementById('download-csv-btn').disabled = false;
+
+                // konfetti :)
+                if (window.confetti) {
+                    const duration = 3 * 1000;      // 3 sekundy
+                    const animationEnd = Date.now() + duration
+                    const colors = ['#f3aad1', '#f3aaf0', '#ffdbf0', '#ffffff'];
+
+                    (function frame() {
+                        const timeLeft = animationEnd - Date.now()
+
+                        confetti({
+                            particleCount: 3,
+                            angle: 60,
+                            spread: 85,
+                            origin: {x: 0, y: 0.8},
+                            colors: colors,
+                            zIndex: 9999
+                        });
+
+                        confetti({
+                            particleCount: 3,
+                            angle: 120,
+                            spread: 85,
+                            origin: {x: 1, y: 0.8},
+                            colors: colors,
+                            zIndex: 9999
+                        });
+
+                        if (timeLeft > 0) {
+                            requestAnimationFrame(frame);
+                        }
+                    }());
+                }
+
             } catch (err) {
                 alert(`Błąd: ${err.message}`);
             } finally {
@@ -356,4 +399,44 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // dynamiczne pola
     setupDynamicInputs(); 
+
+    // fab do scrolla
+    const scrollBtn = document.getElementById('scroll-nav-btn');
+    const scrollIcon = document.getElementById('scroll-icon');
+
+    const updateScrollButton = () => {
+        if (!scrollBtn) return;
+        
+        const scrollY = window.scrollY;
+        const bodyHeight = document.body.offsetHeight;
+        const windowHeight = window.innerHeight;
+
+        scrollBtn.classList.remove('opacity-0', 'translate-y-10', 'invisible');
+        scrollBtn.classList.add('opacity-100', 'translate-y-0', 'visible');
+
+        // logika zmiany ikony góra/dół
+        const isNearBottom = (windowHeight + scrollY) >= bodyHeight - 200;
+        const currentIcon = scrollBtn.querySelector('svg, i');
+        const targetIconName = isNearBottom ? 'chevron-up' : 'chevron-down';
+
+        if (currentIcon && currentIcon.getAttribute('data-lucide') !== targetIconName) {
+            scrollBtn.innerHTML = `<i data-lucide="${targetIconName}" id="scroll-icon" class="w-6 h-6"></i>`;
+            if (window.lucide) lucide.createIcons();
+        }
+    };
+
+    window.addEventListener('scroll', updateScrollButton);
+
+    scrollBtn?.addEventListener('click', () => {
+        const scrollY = window.scrollY;
+        const bodyHeight = document.body.offsetHeight;
+        const windowHeight = window.innerHeight;
+        const isNearBottom = (windowHeight + scrollY) >= bodyHeight - 200;
+
+        if (isNearBottom) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+            window.scrollTo({ top: bodyHeight, behavior: 'smooth' });
+        }
+    });
 });
