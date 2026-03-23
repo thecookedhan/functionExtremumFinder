@@ -93,6 +93,58 @@
             </div>
         </div>
     </div>
+    <footer class="mt-12 mb-8">
+        <div class="glass-card p-6 rounded-3xl flex flex-col lg:flex-row items-center justify-between gap-8">
+            
+            <div class="flex flex-wrap items-center justify-center gap-6">
+                <div class="flex items-center gap-3">
+                    <div class="p-2.5 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-xl border border-white/40">
+                        <i data-lucide="user" class="w-5 h-5 text-purple-600"></i>
+                    </div>
+                    <div>
+                        <div class="text-[9px] uppercase font-bold text-gray-500 tracking-wider leading-none mb-1">Backend</div>
+                        <div class="text-sm font-semibold text-gray-800">Zuzanna Brauer</div>
+                    </div>
+                </div>
+
+                <div class="hidden md:block w-px h-8 bg-gray-300/40"></div>
+
+                <div class="flex items-center gap-3">
+                    <div class="p-2.5 bg-gradient-to-br from-pink-500/20 to-purple-500/20 rounded-xl border border-white/40">
+                        <i data-lucide="user" class="w-5 h-5 text-pink-600"></i>
+                    </div>
+                    <div>
+                        <div class="text-[9px] uppercase font-bold text-gray-500 tracking-wider leading-none mb-1">Frontend</div>
+                        <div class="text-sm font-semibold text-gray-800">Maja Chlipała</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-center gap-8">
+                <div class="text-center md:text-right">
+                    <div class="text-[10px] uppercase font-bold text-gray-400 tracking-widest">Wersja</div>
+                    <div class="flex items-center gap-2 justify-center md:justify-end mt-1">
+                        <span class="text-xs font-medium text-gray-600 italic">Marzec 2026</span>
+                    </div>
+                </div>
+
+                <a href="https://github.com/thecookedhan/OE1.git" target="_blank" 
+                class="flex items-center gap-3 px-5 py-2.5 bg-gray-800 hover:bg-gray-900 text-white rounded-2xl transition-all hover:scale-105 shadow-lg shadow-gray-200">
+                    <i data-lucide="github" class="w-5 h-5"></i>
+                    <div class="text-left">
+                        <div class="text-[9px] uppercase font-bold opacity-70 leading-none">Repozytorium</div>
+                        <div class="text-xs font-semibold">Kod źródłowy</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        
+        <div class="mt-6 text-center">
+            <p class="text-[10px] text-gray-400 font-medium uppercase tracking-[0.3em] opacity-80">
+                &copy; 2026 Projekt Akademicki | Obliczenia Ewolucyjne
+            </p>
+        </div>
+    </footer>
 </div>
 
 <script src="{{ url_for('static', filename='js/main.js') }}"></script>

@@ -3,20 +3,34 @@ import time
 import math
 import traceback
 from genetic_algorithm.ga_core import GeneticAlgorithm
+import benchmark_functions as bf
 
 app = Flask(__name__)
 
-# funkcja celu (na razie tylko nasza)
-def michalewicz_function(x, m=10):
-    total_sum = 0
-    n = len(x)
-    for i in range(n):
-        xi = x[i]
-        term1 = math.sin(xi)
-        term2 = math.sin(((i + 1) * (xi**2)) / math.pi)
-        total_sum += term1 * (term2 ** (2 * m))
-    
-    return -total_sum
+FUNCTIONS_MAP = {
+    "michalewicz": bf.Michalewicz,
+    "ackley": bf.Ackley,
+    "rastrigin": bf.Rastrigin,
+    "griewank": bf.Griewank,
+    "rana": bf.Rana,
+    "egg": bf.EggHolder,
+    "schaffer": bf.Schaffer2,
+    "hypersphere": bf.Hypersphere,
+    "hyperellipsoid": bf.Hyperellipsoid,
+    "schwefel": bf.Schwefel,
+    "rosenbrock": bf.Rosenbrock,
+    "styblinski": bf.StyblinskiTang,
+    "keane": bf.Keane,
+    "dejong3": bf.DeJong3,
+    "dejong5": bf.DeJong5,
+    "martin": bf.MartinGaddy,
+    "easom": bf.Easom,
+    "goldstein": bf.GoldsteinAndPrice,
+    "picheny": bf.PichenyGoldsteinAndPrice,
+    "cormick": bf.McCormick,
+    "himmel": bf.Himmelblau,
+    "pits": bf.PitsAndHoles
+}
 
 # trasy
 @app.route('/')
@@ -34,7 +48,7 @@ def run_algorithm():
         sel_args = params.get('selection_arguments', {})
         mut_args = params.get('mutation_arguments', {})
         
-        num_vars = int(main_args.get('number_of_variables', 2))
+        num_vars = int(main_args.get('number_of_variables') or 2)
         bounds = main_args.get('bounds', [0, 3.1415])
         pop_size = int(main_args.get('population_size', 100))
         epochs = int(main_args.get('number_of_generations', 50))
@@ -52,11 +66,25 @@ def run_algorithm():
         bit_mut_rate = float(mut_args.get('bit_mutation_rate', 0.01))
         uni_cross_rate = float(params.get('uniform_crossover_rate', 0.5))
 
+        selected_fun_name = params.get("objective_function", "michalewicz")
+        fun_class = FUNCTIONS_MAP.get(selected_fun_name, bf.Michalewicz)
+
+        # hard code funkcji 2d
+        fixed_2d = ["dejong5", "martin", "easom", "goldstein", "picheny",
+                    "cormick", "schaffer", "himmel", "pits"]
+
+        if selected_fun_name in fixed_2d:
+            fitness_instance = fun_class()
+        else:
+            fitness_instance = fun_class(n_dimensions=num_vars)
+
+        def fitness_wrapper(x):
+            return fitness_instance(x)
 
         ga = GeneticAlgorithm(
             population_size=pop_size,
             number_of_generations=epochs,
-            fitness_function=michalewicz_function,
+            fitness_function=fitness_wrapper,
             bounds=bounds,
             bits_per_variable=precision,
             number_of_variables=num_vars,

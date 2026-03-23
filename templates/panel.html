@@ -7,6 +7,48 @@
     </h2>
 
     <form id="configForm" class="space-y-5">
+        <div class="space-y-2">
+            <label class="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                <i data-lucide="function-square" class="w-4 h-4 text-blue-500"></i>
+                Funkcja celu
+            </label>
+            <select name="objectiveFunction" id="function-select"
+                    class="w-full p-2 rounded-xl border border-white/50 backdrop-blur-sm focus:border-purple-300 outline-none appearance-none cursor-pointer font-medium text-gray-700 text-sm"
+                    style="background: rgba(255, 255, 255, 0.5)">
+                
+                <optgroup label="Ciągłe i multimodalne">
+                    <option value="michalewicz" selected>Michalewicz</option>
+                    <option value="ackley">Ackley</option>
+                    <option value="rastrigin">Rastrigin</option>
+                    <option value="griewank">Griewank</option>
+                    <option value="rana">Rana</option>
+                    <option value="egg">Egg Holder</option>
+                    <option value="schaffer">Schaffer 2</option>
+                </optgroup>
+
+                <optgroup label="Unimodalne">
+                    <option value="hypersphere">Hypersphere</option>
+                    <option value="hyperellipsoid">Hyperellipsoid</option>
+                    <option value="schwefel">Schwefel</option>
+                    <option value="rosenbrock">Rosenbrock</option>
+                    <option value="styblinski">Styblinski and Tang</option>
+                    <option value="keane">Keane</option>
+                </optgroup>
+
+                <optgroup label="Inne popularne/Specyficzne">
+                    <option value="dejong3">De Jong 3</option>
+                    <option value="dejong5">De Jong 5</option>
+                    <option value="martin">Martin and Gaddy</option>
+                    <option value="easom">Easom</option>
+                    <option value="goldstein">Goldstein and Price</option>
+                    <option value="picheny">Picheny, Goldstein and Price</option>
+                    <option value="cormick">Mc Cormick</option>
+                    <option value="himmel">Himmelblau</option>
+                    <option value="pits">Pits and Holes</option>
+                </optgroup>
+            </select>
+        </div>
+
         <div class="grid grid-cols-1 gap-4">
             <div class="space-y-2">
                 <label class="text-sm font-medium text-gray-700">Liczba zmiennych</label>

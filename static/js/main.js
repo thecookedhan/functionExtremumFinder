@@ -10,7 +10,55 @@ let globalHistory = [];
 
 // obsługa dynamicznych pól w formularzu
 function setupDynamicInputs() {
-    // obsługa Selekcji
+    // obsługa funkcji celu (pa teraz)
+    const functionSelect = document.getElementById('function-select');
+    const numVarsInput = document.querySelector('input[name="numVariables"]');
+    const rangeFromInput = document.querySelector('input[name="rangeFrom"]');
+    const rangeToInput = document.querySelector('input[name="rangeTo"]');
+
+    const functionConfigs = {
+        'hypersphere': {vars: null, range: [-5.0, 5.0]},
+        'hyperellipsoid': {vars: null, range: [-65.536, 65.536]},
+        'schwefel': {vars: null, range: [-500, 500]},
+        'ackley': {vars: null, range: [-32.768, 32.768]},
+        'michalewicz': {vars: null, range: [0, Math.PI]},
+        'rastrigin': {vars: null, range: [-5.12, 5.12]},
+        'rosenbrock': {vars: null, range: [-2.048, 2.048]},
+        'dejong3': {vars: null, range: [-5.12, 5.12]},
+        'dejong5': {vars: 2, range: [-65.536, 65.536]},
+        'martin': {vars: 2, range: [-20, 20]},
+        'griewank': {vars: null, range: [-600, 600]},
+        'easom': {vars: 2, range: [-100, 100]},
+        'goldstein': {vars: 2, range: [-2, 2]},
+        'picheny': {vars: 2, range: [-2, 2]},
+        'styblinski': {vars: null, range: [-5, 5]},
+        'cormick': {vars: 2, range: [-1.5, 4]},
+        'rana': {vars: null, range: [-512, 512]},
+        'egg': {vars: null, range: [-512, 512]},
+        'keane': {vars: null, range: [0, 10]},
+        'schaffer': {vars: 2, range: [-100, 100]},
+        'himmel': {vars: 2, range: [-5, 5]},
+        'pits': {vars: 2, range: [0, 1]}
+    }
+
+    functionSelect?.addEventListener('change', (e) => {
+        const config = functionConfigs[e.target.value];
+        if (config) {
+            rangeFromInput.value = config.range[0];
+            rangeToInput.value = config.range[1];
+    
+            if (config.vars == 2) {
+                numVarsInput.value = 2;
+                numVarsInput.disabled = true;
+                numVarsInput.classList.add('bg-gray-200', 'cursor-not-allowed');
+            } else {
+                numVarsInput.disabled = false;
+                numVarsInput.classList.remove('bg-gray-200', 'cursor-not-allowed');
+            }
+        }
+    });
+
+    // obsługa selekcji
     const selectionSelect = document.querySelector('select[name="selection"]');
     const updateSelection = () => {
         const val = selectionSelect?.value;
@@ -21,7 +69,7 @@ function setupDynamicInputs() {
     };
     selectionSelect?.addEventListener('change', updateSelection);
 
-    // obsługa Krzyżowania
+    // obsługa krzyżowania
     const crossoverSelect = document.querySelector('select[name="crossover"]');
     const updateCrossover = () => {
         const val = crossoverSelect?.value;
@@ -30,7 +78,7 @@ function setupDynamicInputs() {
     };
     crossoverSelect?.addEventListener('change', updateCrossover);
 
-    // obsługa Mutacji
+    // obsługa mutacji
     const mutationSelect = document.querySelector('select[name="mutation"]');
     const updateMutation = () => {
         const val = mutationSelect?.value;
@@ -184,6 +232,7 @@ if (configForm) {
         
         // konstrukcja paczki JSON dla app.py
         const payload = {
+            "objective_function": raw.objectiveFunction,
             "main_arguments": {
                 "population_size": parseInt(raw.populationSize),
                 "number_of_generations": parseInt(raw.numEpochs),
