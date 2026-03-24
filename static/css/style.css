@@ -84,3 +84,50 @@ body {
 #egg-btn:not(:active) {
     animation: egg-sway 3s ease-in-out infinite;
 }
+
+/* do guzików wykresu */
+.js-plotly-plot .plotly .modebar {
+    background-color: transparent !important;
+    box-shadow: none !important;
+    margin-top: 5px !important; 
+}
+
+/* grupa przycisków */
+.js-plotly-plot .plotly .modebar-group {
+    background: transparent !important;
+    display: flex !important;
+    align-items: center !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+}
+
+.js-plotly-plot .plotly .modebar-btn {
+    background-color: transparent !important;
+    padding-top: 10px !important; 
+    padding-bottom: 10px !important;
+    padding-left: 6px !important;
+    padding-right: 6px !important;
+    display: flex !important;
+    align-items: center !important;
+    height: auto !important;
+}
+
+/* skalowanie ikon */
+.js-plotly-plot .plotly .modebar-btn svg {
+    transform: scale(0.9) !important;
+}
+
+/* byebye separator */
+.js-plotly-plot .plotly .modebar-divider {
+    display: none !important;
+}
+
+/* kolorki */
+.js-plotly-plot .plotly .modebar-btn path {
+    fill: #ec4899 !important;
+}
+
+.js-plotly-plot .plotly .modebar-btn:hover path {
+    fill: #db2777 !important;
+}

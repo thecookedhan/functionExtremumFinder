@@ -199,8 +199,8 @@ document.addEventListener('DOMContentLoaded', () => {
             },
             {
                 x: history.map(d => d.epoch),
-                y: history.map(d => d.averageFitness),
-                name: 'Średnie',
+                y: history.map(d => d.medianFitness),
+                name: 'Mediana',
                 line: { color: '#ec4899', width: 2.5 },
                 type: 'scatter',
                 mode: 'lines'
@@ -217,31 +217,51 @@ document.addEventListener('DOMContentLoaded', () => {
         ];
 
         const layout = {
-            height: 500,
-            dragmode: 'pan',
+            height: 550,
+            dragmode: 'zoom', 
             paper_bgcolor: 'rgba(0,0,0,0)',
             plot_bgcolor: 'rgba(255,255,255,0.05)',
             font: { family: 'Poppins, sans-serif', color: '#4b5563', size: 14 },
-            margin: { t: 40, r: 30, l: 80, b: 100 },
+            margin: { t: 40, r: 30, l: 80, b: 40 },
             hovermode: 'x unified',
             xaxis: {
                 gridcolor: 'rgba(0,0,0,0.05)',
-                title: { text: 'Epoka', font: { size: 14, weight: 600 }, standoff: 20 },
+                title: { text: 'Epoka', font: { size: 14, weight: 600 }, standoff: 10 },
                 zeroline: false,
-                rangeslider: { visible: true, thickness: 0.05, bgcolor: 'rgba(255,255,255,0.1)' },
-                automargin: true
+                automargin: true,
+                rangeslider: { 
+                    visible: true, 
+                    thickness: 0.07, 
+                    bgcolor: 'rgba(236, 72, 153, 0.05)',
+                    bordercolor: 'rgba(236, 72, 153, 0.2)',
+                    borderwidth: 1
+                }
             },
             yaxis: {
                 gridcolor: 'rgba(0,0,0,0.05)',
-                title: { text: 'Wartość Przystosowania', font: { size: 14, weight: 600 }, standoff: 25 },
+                title: { text: 'Wartość przystosowania (fitness)', font: { size: 14, weight: 600 }, standoff: 25 },
                 zeroline: false,
                 tickformat: '.2f',
                 automargin: true
             },
-            legend: { orientation: 'h', x: 0.5, xanchor: 'center', y: -0.5 }
+            legend: { orientation: 'h', x: 0.5, xanchor: 'center', y: -0.4 },
+            modebar: {
+                orientation: 'h',
+                bgcolor: 'transparent',
+                color: '#ec4899', 
+                activecolor: '#db2777'
+            }
         };
 
-        Plotly.newPlot('fitnessPlot', traces, layout, { responsive: true, displaylogo: false, locale: 'pl' });
+        const config = {
+            responsive: true,
+            displaylogo: false,
+            locale: 'pl',
+            displayModeBar: true,
+            modeBarButtonsToRemove: ['select2d', 'lasso2d', 'zoom2d', 'pan2d', 'sendDataToCloud'],
+        };
+
+        Plotly.newPlot('fitnessPlot', traces, layout, config);
     }
 
     // renderowanie tabeli wyników
@@ -377,21 +397,46 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('download-csv-btn')?.addEventListener('click', () => {
         if (globalHistory.length === 0) return;
 
-        // nazwa funkcji
+        // nazwa funkcji + data
         const functionSelect = document.getElementById('function-select');
         const functionName = functionSelect ? functionSelect.value : 'wyniki';
-
-        // data
         const now = new Date();
         const dateStr = `${now.getDate().toString().padStart(2, '0')}_${(now.getMonth() + 1).toString().padStart(2, '0')}_${now.getFullYear()}`;
 
-        const headers = 'Epoch,Best Fitness,Average Fitness,Worst Fitness\n';
-        const rows = globalHistory.map(h => `${h.epoch},${h.bestFitness},${h.averageFitness},${h.worstFitness}`).join('\n');
-        const blob = new Blob([headers + rows], { type: 'text/csv' });
+        // parametry
+        const formData = new FormData(document.getElementById('configForm'));
+        const p = Object.fromEntries(formData.entries());
+
+        // sekcja parametrów jako kom
+        let csvContent = `### PARAMETRY URUCHOMIENIA ###\n`;
+        csvContent += `Funkcja celu: ${functionName}\n`;
+        csvContent += `Wielkosc populacji: ${p.populationSize}\n`;
+        csvContent += `Liczba epok: ${p.numEpochs}\n`;
+        csvContent += `Zakres: [${p.rangeFrom} ; ${p.rangeTo}]\n`;
+        csvContent += `Precyzja (bity): ${p.precision}\n`;
+        csvContent += `Liczba zmiennych: ${p.numVariables}\n`;
+        csvContent += `Selekcja: ${p.selection} (param: ${p.tournamentSize || p.bestPercentage})\n`;
+        csvContent += `Krzyzowanie: ${p.crossover} (p: ${p.crossoverProb})\n`;
+        csvContent += `Mutacja: ${p.mutation} (p: ${p.mutationProb})\n`;
+        csvContent += `Strategia elitarna: ${p.eliteStrategy ? 'TAK (rozmiar grupy elitarnej: ' + p.eliteSize + ')' : 'NIE'}\n`;
+        csvContent += `Inwersja: ${p.inversion ? 'TAK (% długości ulegający inwersji: ' + p.maxSegmentRatio + ')' : 'NIE'}\n`;
+        csvContent += `Czas wykonania: ${document.getElementById('calc-time').innerText}\n`;
+        csvContent += `\n`; 
+
+        // wynikowa tabela danych
+        csvContent += 'Epoch;Best Fitness;Median Fitness;Worst Fitness\n';
+        const rows = globalHistory.map(h => 
+            `${h.epoch};${h.bestFitness};${h.medianFitness};${h.worstFitness}`
+        ).join('\n');
+        
+        csvContent += rows;
+
+        // plik csv
+        const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `${functionName}_${dateStr}.csv`;
+        a.download = `GA_${functionName}_${dateStr}.csv`;
         
         a.click();
         window.URL.revokeObjectURL(url);

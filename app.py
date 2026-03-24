@@ -123,7 +123,7 @@ def run_algorithm():
             history_to_front.append({
                 "epoch": i,
                 "bestFitness": ga.best_fitness_history[i],
-                "averageFitness": ga.median_fitness_history[i],
+                "medianFitness": ga.median_fitness_history[i],
                 "worstFitness": ga.worst_fitness_history[i]
             })
 
