@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const togglePlay = () => {
         if (!audio) return;
         if (audio.paused) {
-            audio.play().catch(e => console.log("Kliknij ikonę, by włączyć audio"));
+            audio.play().catch(e => console.log("kliknij ikonę, by włączyć audio"));
             eggBtn?.classList.add('animate-bounce');
         } else {
             audio.pause();
@@ -192,7 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
             {
                 x: history.map(d => d.epoch),
                 y: history.map(d => d.bestFitness),
-                name: 'Najlepsze',
+                name: 'Best',
                 line: { color: '#3b82f6', width: 4, shape: 'spline' },
                 type: 'scatter',
                 mode: 'lines'
@@ -200,7 +200,7 @@ document.addEventListener('DOMContentLoaded', () => {
             {
                 x: history.map(d => d.epoch),
                 y: history.map(d => d.medianFitness),
-                name: 'Mediana',
+                name: 'Median',
                 line: { color: '#ec4899', width: 2.5 },
                 type: 'scatter',
                 mode: 'lines'
@@ -208,7 +208,7 @@ document.addEventListener('DOMContentLoaded', () => {
             {
                 x: history.map(d => d.epoch),
                 y: history.map(d => d.worstFitness),
-                name: 'Najgorsze',
+                name: 'Worst',
                 line: { color: '#633e6e', width: 1.5, dash: 'dot' },
                 type: 'scatter',
                 mode: 'lines',
@@ -226,7 +226,7 @@ document.addEventListener('DOMContentLoaded', () => {
             hovermode: 'x unified',
             xaxis: {
                 gridcolor: 'rgba(0,0,0,0.05)',
-                title: { text: 'Epoka', font: { size: 14, weight: 600 }, standoff: 10 },
+                title: { text: 'Epoch', font: { size: 14, weight: 600 }, standoff: 10 },
                 zeroline: false,
                 automargin: true,
                 rangeslider: { 
@@ -239,7 +239,7 @@ document.addEventListener('DOMContentLoaded', () => {
             },
             yaxis: {
                 gridcolor: 'rgba(0,0,0,0.05)',
-                title: { text: 'Wartość przystosowania (fitness)', font: { size: 14, weight: 600 }, standoff: 25 },
+                title: { text: 'Fitness value', font: { size: 14, weight: 600 }, standoff: 25 },
                 zeroline: false,
                 tickformat: '.2f',
                 automargin: true
@@ -297,7 +297,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             btn.disabled = true;
             const originalText = btnText.innerText;
-            btnText.innerText = "Obliczanie...";
+            btnText.innerText = "Calculating...";
 
             const formData = new FormData(e.target);
             const raw = Object.fromEntries(formData.entries());
@@ -410,9 +410,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // sekcja parametrów jako kom
         let csvContent = `### PARAMETRY URUCHOMIENIA ###\n`;
         csvContent += `Funkcja celu: ${functionName}\n`;
-        csvContent += `Wielkosc populacji: ${p.populationSize}\n`;
+        csvContent += `Wielkość populacji: ${p.populationSize}\n`;
         csvContent += `Liczba epok: ${p.numEpochs}\n`;
-        csvContent += `Zakres: [${p.rangeFrom} ; ${p.rangeTo}]\n`;
+        csvContent += `Zakres: [${p.rangeFrom} , ${p.rangeTo}]\n`;
         csvContent += `Precyzja (bity): ${p.precision}\n`;
         csvContent += `Liczba zmiennych: ${p.numVariables}\n`;
         csvContent += `Selekcja: ${p.selection} (param: ${p.tournamentSize || p.bestPercentage})\n`;

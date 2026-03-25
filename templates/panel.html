@@ -3,14 +3,14 @@
     
     <h2 class="text-xl font-semibold text-gray-700 mb-6 flex items-center gap-2">
         <i data-lucide="sparkles" class="w-5 h-5 text-purple-400"></i>
-        Konfiguracja algorytmu
+        Configuration
     </h2>
 
     <form id="configForm" class="space-y-5">
         <div class="space-y-2">
             <label class="text-sm font-semibold text-gray-700 flex items-center gap-2">
                 <i data-lucide="function-square" class="w-4 h-4 text-blue-500"></i>
-                Funkcja celu
+                Objective function
             </label>
             <select name="objectiveFunction" id="function-select"
                     class="w-full p-2 rounded-xl border border-white/50 backdrop-blur-sm focus:border-purple-300 outline-none appearance-none cursor-pointer font-medium text-gray-700 text-sm"
@@ -51,14 +51,14 @@
 
         <div class="grid grid-cols-1 gap-4">
             <div class="space-y-2">
-                <label class="text-sm font-medium text-gray-700">Liczba zmiennych</label>
+                <label class="text-sm font-medium text-gray-700">Number of variables</label>
                 <input type="number" name="numVariables" value="2" min="1"
                        class="w-full p-2 rounded-xl border border-white/50 backdrop-blur-sm transition-all focus:border-pink-300 outline-none"
                        style="background: rgba(255, 255, 255, 0.4)">
             </div>
 
             <div class="space-y-2">
-                <label class="text-sm font-medium text-gray-700">Zakres zmiennych</label>
+                <label class="text-sm font-medium text-gray-700">Variables range</label>
                 <div class="grid grid-cols-2 gap-3">
                     <input type="number" name="rangeFrom" placeholder="Od" value="0" step="any"
                            class="w-full p-2 rounded-xl border border-white/50 backdrop-blur-sm focus:border-pink-300 outline-none"
@@ -71,13 +71,13 @@
 
             <div class="grid grid-cols-2 gap-4">
                 <div class="space-y-2">
-                    <label class="text-sm font-medium text-gray-700">Wielkość populacji</label>
+                    <label class="text-sm font-medium text-gray-700">Population size</label>
                     <input type="number" name="populationSize" value="100" min="2"
                            class="w-full p-2 rounded-xl border border-white/50 backdrop-blur-sm focus:border-pink-300 outline-none"
                            style="background: rgba(255, 255, 255, 0.4)">
                 </div>
                 <div class="space-y-2">
-                    <label class="text-sm font-medium text-gray-700">Liczba epok</label>
+                    <label class="text-sm font-medium text-gray-700">Number of epochs</label>
                     <input type="number" name="numEpochs" value="50" min="1"
                            class="w-full p-2 rounded-xl border border-white/50 backdrop-blur-sm focus:border-pink-300 outline-none"
                            style="background: rgba(255, 255, 255, 0.4)">
@@ -85,7 +85,7 @@
             </div>
 
             <div class="space-y-2">
-                <label class="text-sm font-medium text-gray-700">Dokładność bitowa dla jednej zmiennej</label>
+                <label class="text-sm font-medium text-gray-700">Bit precision per variable</label>
                 <input type="number" name="precision" value="20" min="1" max="64"
                        class="w-full p-2 rounded-xl border border-white/50 backdrop-blur-sm focus:border-pink-300 outline-none"
                        style="background: rgba(255, 255, 255, 0.4)">
@@ -96,25 +96,25 @@
 
         <div class="space-y-3 p-3 rounded-2xl bg-white/20 border border-white/30">
             <div class="space-y-2">
-                <label class="text-sm font-bold text-gray-600">Metoda selekcji</label>
+                <label class="text-sm font-bold text-gray-600">Selection method</label>
                 <select name="selection" id="selection-select"
                         class="w-full p-2 rounded-xl border border-white/50 backdrop-blur-sm focus:border-blue-300 outline-none appearance-none cursor-pointer"
                         style="background: rgba(255, 255, 255, 0.4)">
-                    <option value="best">Najlepszych</option>
-                    <option value="roulette" selected>Ruletka</option>
-                    <option value="tournament">Turniejowa</option>
+                    <option value="best">Best</option>
+                    <option value="roulette" selected>Roulette</option>
+                    <option value="tournament">Tournament</option>
                 </select>
             </div>
 
             <div id="tournament-params" class="hidden animate-in fade-in slide-in-from-top-1 space-y-1">
-                <label class="text-[11px] font-bold text-blue-600 uppercase tracking-wider ml-1">Rozmiar turnieju</label>
+                <label class="text-[11px] font-bold text-blue-600 uppercase tracking-wider ml-1">Tournament size</label>
                 <input type="number" name="tournamentSize" value="3" min="2"
                        class="w-full p-2 rounded-xl border border-blue-200 focus:border-blue-400 outline-none text-sm"
                        style="background: rgba(235, 245, 255, 0.5)">
             </div>
 
             <div id="best-params" class="hidden animate-in fade-in slide-in-from-top-1 space-y-1">
-                <label class="text-[11px] font-bold text-pink-600 uppercase tracking-wider ml-1">Procent najlepszych (0-1)</label>
+                <label class="text-[11px] font-bold text-pink-600 uppercase tracking-wider ml-1">Percent of best individuals (0-1)</label>
                 <input type="number" name="bestPercentage" value="0.1" min="0.01" max="1" step="0.01"
                        class="w-full p-2 rounded-xl border border-pink-200 focus:border-pink-400 outline-none text-sm"
                        style="background: rgba(255, 240, 245, 0.5)">
@@ -123,24 +123,24 @@
 
         <div class="space-y-3 p-3 rounded-2xl bg-white/20 border border-white/30">
             <div class="space-y-2">
-                <label class="text-sm font-bold text-gray-600">Metoda krzyżowania</label>
+                <label class="text-sm font-bold text-gray-600">Crossover method</label>
                 <select name="crossover" id="crossover-select"
                         class="w-full p-2 rounded-xl border border-white/50 backdrop-blur-sm focus:border-blue-300 outline-none"
                         style="background: rgba(255, 255, 255, 0.4)">
-                    <option value="one_point">Jednopunktowe</option>
-                    <option value="two_point">Dwupunktowe</option>
-                    <option value="uniform">Jednorodne</option>
-                    <option value="discrete">Ziarniste</option>
+                    <option value="one_point">One-point</option>
+                    <option value="two_point">Two-point</option>
+                    <option value="uniform">Uniform</option>
+                    <option value="discrete">Discrete</option>
                 </select>
             </div>
             <div class="space-y-1">
-                <label class="text-[11px] font-medium text-gray-500 ml-1">Prawdopodobieństwo krzyżowania (ogólne)</label>
+                <label class="text-[11px] font-medium text-gray-500 ml-1">Crossover probability (general)</label>
                 <input type="number" name="crossoverProb" value="0.8" step="0.05" min="0" max="1"
                        class="w-full p-1.5 text-sm rounded-lg border border-white/30 outline-none focus:border-blue-200"
                        style="background: rgba(255, 255, 255, 0.2)">
             </div>
             <div id="uniform-params" class="hidden animate-in fade-in space-y-1">
-                <label class="text-[11px] font-bold text-blue-600 uppercase tracking-wider ml-1">Prawd. zamiany genu (0-1)</label>
+                <label class="text-[11px] font-bold text-blue-600 uppercase tracking-wider ml-1">Gene inversion probability (0-1)</label>
                 <input type="number" name="geneExchangeProb" value="0.5" step="0.05" min="0" max="1"
                        class="w-full p-1.5 text-sm rounded-lg border border-blue-200 outline-none"
                        style="background: rgba(235, 245, 255, 0.5)">
@@ -149,23 +149,23 @@
 
         <div class="space-y-3 p-3 rounded-2xl bg-white/20 border border-white/30">
             <div class="space-y-2">
-                <label class="text-sm font-bold text-gray-600">Metoda mutacji</label>
+                <label class="text-sm font-bold text-gray-600">Mutation method</label>
                 <select name="mutation" id="mutation-select"
                         class="w-full p-2 rounded-xl border border-white/50 backdrop-blur-sm focus:border-blue-300 outline-none"
                         style="background: rgba(255, 255, 255, 0.4)">
-                    <option value="bit_flip" selected>Jednopunktowa</option>
-                    <option value="two_bits">Dwupunktowa</option>
-                    <option value="edge">Brzegowa</option>
+                    <option value="bit_flip" selected>Bit flip</option>
+                    <option value="two_bits">Two bits flip</option>
+                    <option value="edge">Edge</option>
                 </select>
             </div>
             <div class="space-y-1">
-                <label class="text-[11px] font-medium text-gray-500 ml-1">Prawdopodobieństwo mutacji (ogólne)</label>
+                <label class="text-[11px] font-medium text-gray-500 ml-1">Mutation probability (general)</label>
                 <input type="number" name="mutationProb" value="0.05" step="0.01" min="0" max="1"
                        class="w-full p-1.5 text-sm rounded-lg border border-white/30 outline-none focus:border-blue-200"
                        style="background: rgba(255, 255, 255, 0.2)">
             </div>
             <div id="bit-flip-params" class="hidden animate-in fade-in space-y-1">
-                <label class="text-[11px] font-bold text-purple-600 uppercase tracking-wider ml-1">Prawd. zmiany bitu (0-1)</label>
+                <label class="text-[11px] font-bold text-purple-600 uppercase tracking-wider ml-1">Bit inversion probability (0-1)</label>
                 <input type="number" name="bitMutationProb" value="0.01" step="0.001" min="0" max="1"
                        class="w-full p-1.5 text-sm rounded-lg border border-purple-200 outline-none"
                        style="background: rgba(250, 240, 255, 0.5)">
@@ -176,7 +176,7 @@
 
         <div class="p-3 rounded-xl space-y-3" style="background: rgba(255, 255, 255, 0.3)">
             <div class="flex items-center justify-between">
-                <span class="text-sm text-gray-700 font-medium">Strategia elitarna</span>
+                <span class="text-sm text-gray-700 font-medium">Elite strategy</span>
                 <label class="relative inline-flex items-center cursor-pointer">
                     <input type="checkbox" name="eliteStrategy" id="elite-toggle" class="sr-only peer" checked>
                     <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-400"></div>
@@ -184,7 +184,7 @@
             </div>
 
             <div id="elite-params" class="animate-in fade-in slide-in-from-top-1 space-y-1">
-                <label class="text-[11px] font-bold text-purple-600 uppercase tracking-wider ml-1">Rozmiar grupy elitarnej</label>
+                <label class="text-[11px] font-bold text-purple-600 uppercase tracking-wider ml-1">Elitism size</label>
                 <input type="number" name="eliteSize" value="2" min="1"
                     class="w-full p-2 rounded-xl border border-purple-200 focus:border-purple-400 outline-none text-sm"
                     style="background: rgba(250, 240, 255, 0.5)">
@@ -193,7 +193,7 @@
 
             <div class="p-3 rounded-xl space-y-3" style="background: rgba(255, 255, 255, 0.3)">
                 <div class="flex items-center justify-between">
-                    <span class="text-sm text-gray-700 font-medium">Operator inwersji</span>
+                    <span class="text-sm text-gray-700 font-medium">Inversion mutation</span>
                     <label class="relative inline-flex items-center cursor-pointer">
                         <input type="checkbox" name="inversion" id="inversion-toggle" class="sr-only peer">
                         <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-400"></div>
@@ -201,7 +201,7 @@
                 </div>
 
                 <div id="inversion-params" class="hidden animate-in fade-in slide-in-from-top-1 space-y-1">
-                    <label class="text-[11px] font-bold text-purple-600 uppercase tracking-wider ml-1">% długości ulegający inwersji (0-1)</label>
+                    <label class="text-[11px] font-bold text-purple-600 uppercase tracking-wider ml-1">Max segment ratio (0-1)</label>
                     <input type="number" name="maxSegmentRatio" value="0.2" step="0.05" min="0.05" max="1"
                         class="w-full p-2 rounded-xl border border-purple-200 focus:border-purple-400 outline-none text-sm"
                         style="background: rgba(250, 240, 255, 0.5)">
@@ -213,7 +213,7 @@
                 class="w-full mt-6 py-4 rounded-2xl font-semibold text-white flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50"
                 style="background: linear-gradient(135deg, #f3aad1 0%, #f3aaf0 100%); box-shadow: 0 10px 30px rgba(243, 170, 209, 0.4);">
             <i data-lucide="play" class="w-5 h-5 fill-current"></i>
-            <span id="btnText">Uruchom algorytm</span>
+            <span id="btnText">Run algorithm</span>
         </button>
     </form>
 </div>

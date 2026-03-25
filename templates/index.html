@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Algorytm Genetyczny</title>
+    <title>Genetic algorithm</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -20,14 +20,14 @@
     
     <header class="mb-8 flex flex-col md:flex-row items-center justify-between gap-4">
         <h1 class="text-3xl font-semibold text-gray-700 tracking-tight">
-            Algorytm genetyczny | Dashboard
+            Genetic algorithm | Dashboard
         </h1>
         
         <div class="flex items-center gap-4">
             <div class="glass-card px-6 py-3 rounded-2xl flex items-center gap-3">
                 <i data-lucide="clock" class="w-5 h-5 text-purple-600"></i>
                 <div>
-                    <div class="text-[10px] uppercase font-bold text-gray-500">Czas obliczeń</div>
+                    <div class="text-[10px] uppercase font-bold text-gray-500">Execution time</div>
                     <div id="calc-time" class="text-xl font-semibold text-purple-700 leading-none">0.00s</div>
                 </div>
             </div>
@@ -35,7 +35,7 @@
             <button id="download-csv-btn" disabled 
                 class="glass-card px-6 py-3 rounded-2xl flex items-center gap-2 transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed">
                 <i data-lucide="download" class="w-5 h-5 text-blue-500"></i>
-                <span class="font-medium text-gray-700">Pobierz wyniki</span>
+                <span class="font-medium text-gray-700">Download results</span>
             </button>
         </div>
     </header>
@@ -50,12 +50,12 @@
             <div class="glass-card p-6 rounded-3xl bg-white/30 backdrop-blur-md border border-white/40">
                 <h2 class="text-xl font-semibold text-gray-700 mb-4 flex items-center gap-2">
                     <i data-lucide="line-chart" class="w-5 h-5 text-blue-400"></i>
-                    Wykres przystosowania (fitness)
+                    Fitness plot over epochs
                 </h2>
                 
                 <div id="chart-placeholder" class="h-[400px] flex flex-col items-center justify-center border-2 border-dashed border-white/40 rounded-2xl text-gray-500">
                     <i data-lucide="activity" class="w-10 h-10 mb-2 opacity-40"></i>
-                    <p>Uruchom algorytm, aby zobaczyć wykres</p>
+                    <p>Run algorithm to see the plot, baby</p>
                 </div>
                 <div id="fitnessPlot" class="w-full hidden"></div>
             </div>
@@ -63,7 +63,7 @@
             <div id="results-section" class="hidden glass-card p-6 rounded-3xl bg-white/30 backdrop-blur-md border border-white/40">
                 <h2 class="text-xl font-semibold text-gray-700 mb-6 flex items-center gap-2">
                     <i data-lucide="award" class="w-5 h-5 text-yellow-500"></i>
-                    Najlepszy osobnik
+                    Best individual
                 </h2>
                 
                 <div class="row g-4">
@@ -72,9 +72,9 @@
                             <table class="w-full text-left">
                                 <thead class="bg-white/20">
                                     <tr>
-                                        <th class="p-3 text-xs font-bold text-gray-600 uppercase">Zmienna</th>
-                                        <th class="p-3 text-xs font-bold text-gray-600 uppercase">Wartość binarna</th>
-                                        <th class="p-3 text-xs font-bold text-gray-600 uppercase text-right">Wartość rzeczywista</th>
+                                        <th class="p-3 text-xs font-bold text-gray-600 uppercase">Varibale</th>
+                                        <th class="p-3 text-xs font-bold text-gray-600 uppercase">Binary value</th>
+                                        <th class="p-3 text-xs font-bold text-gray-600 uppercase text-right">Real value</th>
                                     </tr>
                                 </thead>
                                 <tbody id="results-table-body"></tbody>
@@ -142,9 +142,9 @@
 
             <div class="flex flex-wrap items-center justify-center gap-8">
                 <div class="text-center md:text-right">
-                    <div class="text-[10px] uppercase font-bold text-gray-400 tracking-widest">Wersja</div>
+                    <div class="text-[10px] uppercase font-bold text-gray-400 tracking-widest">Version</div>
                     <div class="flex items-center gap-2 justify-center md:justify-end mt-1">
-                        <span class="text-xs font-medium text-gray-600 italic">Marzec 2026</span>
+                        <span class="text-xs font-medium text-gray-600 italic">March 2026</span>
                     </div>
                 </div>
 
@@ -152,8 +152,8 @@
                 class="flex items-center gap-3 px-5 py-2.5 bg-gray-800 hover:bg-gray-900 text-white rounded-2xl transition-all hover:scale-105 shadow-lg shadow-gray-200">
                     <i data-lucide="github" class="w-5 h-5"></i>
                     <div class="text-left">
-                        <div class="text-[9px] uppercase font-bold opacity-70 leading-none">Repozytorium</div>
-                        <div class="text-xs font-semibold">Kod źródłowy</div>
+                        <div class="text-[9px] uppercase font-bold opacity-70 leading-none">Repository</div>
+                        <div class="text-xs font-semibold">Source code</div>
                     </div>
                 </a>
             </div>
@@ -161,7 +161,7 @@
         
         <div class="mt-6 text-center">
             <p class="text-[10px] text-gray-400 font-medium uppercase tracking-[0.3em] opacity-80">
-                &copy; 2026 Projekt Akademicki | Obliczenia Ewolucyjne
+                &copy; 2026 Projekt akademicki | Obliczenia Ewolucyjna
             </p>
         </div>
     </footer>
