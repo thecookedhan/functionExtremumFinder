@@ -3,36 +3,23 @@ from .classes import Population
 import random
 
 # === MUTATION ===
-def bit_flip_mutation(individual: Individual, bit_mutation_rate: float): # randomly inverse each bit in individual's genome (binary solution list)
-    for locus in range(len(individual)):
-        if random.random() < bit_mutation_rate:
-            individual.genome[locus] = 1 - individual.genome[locus]
-    
-    individual.fitness = None
+def uniform_mutation(individual: Individual, mutation_rate: float, bounds: list[tuple[float, float]]):
+    """
+    Randomly change each gene with a given mutation rate to a random value within specified bounds
+    """
+    for locus in range(0, len(individual)):
+        if random.random() < mutation_rate:
+            individual.genome[locus] = random.uniform(bounds[0], bounds[1])
 
-def two_bits_flip_mutation(individual: Individual): # randomly inverse exactly two bits in the individual's genome (binary solution list)
-    random_indexes = random.sample(range(len(individual)), 2)
-
-    individual.genome[random_indexes[0]] = 1 - individual.genome[random_indexes[0]]
-    individual.genome[random_indexes[1]] = 1 - individual.genome[random_indexes[1]]
-
-    individual.fitness = None
-
-def edge_mutation(individual: Individual): # inverse the first and the last bit in the individual's genome (binary solution list)
-    individual.genome[0] = 1 - individual.genome[0]
-    individual.genome[-1] = 1 - individual.genome[-1]
-
-    individual.fitness = None
-
-def inversion_mutation(individual: Individual, max_segment_ratio: float): # reverse a random segment of the individual's genome (binary solution list)
-    max_segment = int(len(individual) * max_segment_ratio)
-
-    start = random.randint(0, len(individual) - max_segment)
-    end = start + random.randint(2, max_segment)
-
-    individual.genome[start:end] = reversed(individual.genome[start:end])
-
-    individual.fitness = None
+def gaussian_mutation(individual: Individual, mutation_rate: float, mutation_scale: float, bounds: list[tuple[float, float]]):
+    """
+    Randomly change each gene with a given mutation rate by adding a random value from a Gaussian distribution, 
+    ensuring that the mutated gene remains within specified bounds
+    """
+    for locus in range(0, len(individual)):
+        if random.random() < mutation_rate:
+            mutated_gene = individual.genome[locus] + random.gauss(0, mutation_scale)
+            individual.genome[locus] = max(bounds[0], min(mutated_gene, bounds[1]))
 
 # === SELECTION ===
 def tournament_selection(population: Population, tournament_size: int) -> Individual: # select the best individual from a random subset of the population based on fitness
@@ -61,45 +48,40 @@ def roulette_selection(population: Population) -> Individual: # select an indivi
             return individual.copy()
 
 # === CROSSOVER ===
-def one_point_crossover(parent1: Individual, parent2: Individual): # create two children (new individuals) by exchanging parent's (population individuals) genomes parts at one random point
-    crossover_point = random.randint(0, len(parent1) - 1)
-
-    child1_genome = parent1.genome[:crossover_point] + parent2.genome[crossover_point:]
-    child2_genome = parent2.genome[:crossover_point] + parent1.genome[crossover_point:]
-
+def arithmetic_crossover(parent1: Individual, parent2: Individual, bounds: list[tuple[float, float]]) -> tuple[Individual, Individual]:
+    """
+    Create two offsprings by combining genes of a parents with alpha weight, where alpha determines a contribution of each parent to an offspring's genome
+    """
+    alpha = random.random()
+    child1_genome = [alpha * gene1 + (1 - alpha) * gene2 for gene1, gene2 in zip(parent1.genome, parent2.genome)]
+    child2_genome = [(1 - alpha) * gene1 + alpha * gene2 for gene1, gene2 in zip(parent1.genome, parent2.genome)]
+        
     return Individual(child1_genome), Individual(child2_genome)
 
-def two_point_crossover(parent1: Individual, parent2: Individual): # create two children by exchanging genome segments between two points
-    crossover_points = sorted(random.sample(range(len(parent1)), 2))
+def average_crossover(parents: list[Individual]) -> Individual:
+    """
+    Create an offspring by averaging the genes of the parents
+    """
+    child_genome = [sum(gene) / len(parents) for gene in zip(*[parent.genome for parent in parents])]
 
-    child1_genome = parent1.genome[:crossover_points[0]] + parent2.genome[crossover_points[0]:crossover_points[1]] + parent1.genome[crossover_points[1]:]
-    child2_genome = parent2.genome[:crossover_points[0]] + parent1.genome[crossover_points[0]:crossover_points[1]] + parent2.genome[crossover_points[1]:]
-
-    return Individual(child1_genome), Individual(child2_genome)
-
-def discrete_crossover(parent1: Individual, parent2: Individual) -> Individual: # create a child by randomly choosing each gene from one of the parents
-    child_genome = []
-
-    for locus in range(0, len(parent1)):
-        if random.random() <= 0.5:
-            child_genome.append(parent1.genome[locus])
-
-        else:
-            child_genome.append(parent2.genome[locus])
-    
     return Individual(child_genome)
 
-def uniform_crossover(parent1: Individual, parent2: Individual, crossover_rate: float): # create two children by randomly swapping genes between parents
-    child1_genome = []
-    child2_genome = []
+def alpha_blend_crossover(parent1: Individual, parent2: Individual, alpha: float) -> tuple[Individual, Individual]:
+    """
+    Create two offsprings by combining genes of a parents with alpha weight, where alpha extends 
+    a range of possible gene values beyond the defined one by parents' genes
+    """ 
+    child1_genome = [random.uniform(min(gene1, gene2) - alpha * abs(gene1 - gene2), max(gene1, gene2) + alpha * abs(gene1 - gene2)) for gene1, gene2 in zip(parent1.genome, parent2.genome)]
+    child2_genome = [random.uniform(min(gene1, gene2) - alpha * abs(gene1 - gene2), max(gene1, gene2) + alpha * abs(gene1 - gene2)) for gene1, gene2 in zip(parent1.genome, parent2.genome)]
 
-    for locus in range(0, len(parent1)):
-        if random.random() < crossover_rate:
-            child1_genome.append(parent1.genome[locus])
-            child2_genome.append(parent2.genome[locus])
-            
-        else:
-            child1_genome.append(parent2.genome[locus])
-            child2_genome.append(parent1.genome[locus])
-    
+    return Individual(child1_genome), Individual(child2_genome)
+
+def alpha_beta_blend_crossover(parent1: Individual, parent2: Individual, alpha: float, beta: float) -> tuple[Individual, Individual]:
+    """
+    Create two offspring by combining genes of a parents with alpha and beta weights, where alpha and beta extend
+    a range of possible gene values beyond the defined one by parents' genes
+    """
+    child1_genome = [random.uniform(min(gene1, gene2) - alpha * abs(gene1 - gene2), max(gene1, gene2) + beta * abs(gene1 - gene2)) for gene1, gene2 in zip(parent1.genome, parent2.genome)]
+    child2_genome = [random.uniform(min(gene1, gene2) - alpha * abs(gene1 - gene2), max(gene1, gene2) + beta * abs(gene1 - gene2)) for gene1, gene2 in zip(parent1.genome, parent2.genome)]
+
     return Individual(child1_genome), Individual(child2_genome)
