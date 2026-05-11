@@ -39,13 +39,13 @@ def index():
 
 @app.route('/run_algorithm', methods=['POST'])
 def run_algorithm():
-    # pobieramy dane z formularza
     params = request.json
     start_time = time.perf_counter()
 
     try:
         main_args = params.get('main_arguments', {})
         sel_args = params.get('selection_arguments', {})
+        cross_args = params.get('crossover_arguments', {})
         mut_args = params.get('mutation_arguments', {})
         
         num_vars = int(main_args.get('number_of_variables') or 2)
@@ -54,22 +54,28 @@ def run_algorithm():
         epochs = int(main_args.get('number_of_generations', 50))
         precision = int(main_args.get('bits_per_variable', 16))
         elitism_size = int(main_args.get('elitism_size', 0))
-        max_seg = float(main_args.get('max_segment_ratio', 0.2)) 
 
-        selection = sel_args.get('selection_method', 'tournament')
-        crossover = params.get('crossover_method', 'one_point')
-        mutation = mut_args.get('mutation_method', 'bit_flip')
+        # Metody
+        selection = sel_args.get('selection_method', 'roulette')
+        crossover = cross_args.get('method', 'arithmetic')
+        mutation = mut_args.get('method', 'uniform')
         
-        cross_prob = float(params.get('crossover_probability', 0.8))
-        mut_prob = float(mut_args.get('mutation_probability', 0.1))
+        # Prawdopodobieństwa
+        cross_prob = float(cross_args.get('probability', 0.8))
+        mut_prob = float(mut_args.get('individual_probability', 0.05))
 
-        bit_mut_rate = float(mut_args.get('bit_mutation_rate', 0.01))
-        uni_cross_rate = float(params.get('uniform_crossover_rate', 0.5))
+        # Krzyżowanie
+        alpha = float(cross_args.get('alpha', 0.5))
+        beta = float(cross_args.get('beta', 0.5))
 
+        # Mutacja
+        gene_mut_prob = float(mut_args.get('gene_probability', 0.01))
+        sigma = float(mut_args.get('sigma', 0.1))
+
+        # Funkcja celu
         selected_fun_name = params.get("objective_function", "michalewicz")
         fun_class = FUNCTIONS_MAP.get(selected_fun_name, bf.Michalewicz)
 
-        # hard code funkcji 2d
         fixed_2d = ["dejong5", "martin", "easom", "goldstein", "picheny",
                     "cormick", "schaffer", "himmel", "pits"]
 
@@ -94,15 +100,14 @@ def run_algorithm():
             mutation_method=mutation,
             mutation_probability=mut_prob,
             elitism_size=elitism_size,
-            # parametry specyficzne przekazywane jako dodatkowe argumenty
             tournament_size=int(sel_args.get('tournament_size', 3)),
             best_percentage=float(sel_args.get('best_percentage', 0.1)),
-            bit_mutation_rate=bit_mut_rate,
-            uniform_crossover_rate=uni_cross_rate,
-            max_segment_ratio=max_seg
+            alpha=alpha,
+            beta=beta,
+            gene_mutation_rate=gene_mut_prob,
+            sigma=sigma
         )
 
-        # uruchomienie ewolucji
         ga.run()
 
         # dekodowanie najlepszego osobnika do czytelnej formy
@@ -117,7 +122,6 @@ def run_algorithm():
                 "real": decoded_vars[i]
             })
 
-        # przygotowanie historii do wykresu
         history_to_front = []
         for i in range(len(ga.best_fitness_history)):
             history_to_front.append({
@@ -127,12 +131,9 @@ def run_algorithm():
                 "worstFitness": ga.worst_fitness_history[i]
             })
 
-        execution_time = time.perf_counter() - start_time
-
-        # odpowiedź JSON
         return jsonify({
             "success": True,
-            "execution_time": round(execution_time, 4),
+            "execution_time": round(time.perf_counter() - start_time, 4),
             "history": history_to_front,
             "best_individual": {
                 "final_fitness": ga.best_individual.fitness,
@@ -141,13 +142,8 @@ def run_algorithm():
         })
 
     except Exception as e:
-        # błąd w konsoli dla łatwiejszego debugowania
-        print("--- BŁĄD PODCZAS URUCHAMIANIA GA ---")
         print(traceback.format_exc())
-        return jsonify({
-            "success": False, 
-            "error": str(e)
-        }), 500
+        return jsonify({"success": False, "error": str(e)}), 500
 
 if __name__ == "__main__":
     app.run(debug=True)
