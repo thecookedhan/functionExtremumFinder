@@ -66,7 +66,7 @@ def average_crossover(parents: list[Individual]) -> Individual:
 
     return Individual(child_genome)
 
-def alpha_blend_crossover(parent1: Individual, parent2: Individual, alpha: float) -> tuple[Individual, Individual]:
+def alpha_blend_crossover(parent1: Individual, parent2: Individual, alpha: float, bounds: list[tuple[float, float]]) -> tuple[Individual, Individual]:
     """
     Create two offsprings by combining genes of a parents with alpha weight, where alpha extends 
     a range of possible gene values beyond the defined one by parents' genes
@@ -74,9 +74,12 @@ def alpha_blend_crossover(parent1: Individual, parent2: Individual, alpha: float
     child1_genome = [random.uniform(min(gene1, gene2) - alpha * abs(gene1 - gene2), max(gene1, gene2) + alpha * abs(gene1 - gene2)) for gene1, gene2 in zip(parent1.genome, parent2.genome)]
     child2_genome = [random.uniform(min(gene1, gene2) - alpha * abs(gene1 - gene2), max(gene1, gene2) + alpha * abs(gene1 - gene2)) for gene1, gene2 in zip(parent1.genome, parent2.genome)]
 
-    return Individual(child1_genome), Individual(child2_genome)
+    child1_genome_after_bounds_checking = [max(bounds[0], min(gene, bounds[1])) for gene in child1_genome]
+    child2_genome_after_bounds_checking = [max(bounds[0], min(gene, bounds[1])) for gene in child2_genome]
 
-def alpha_beta_blend_crossover(parent1: Individual, parent2: Individual, alpha: float, beta: float) -> tuple[Individual, Individual]:
+    return Individual(child1_genome_after_bounds_checking), Individual(child2_genome_after_bounds_checking)
+
+def alpha_beta_blend_crossover(parent1: Individual, parent2: Individual, alpha: float, beta: float, bounds: list[tuple[float, float]]) -> tuple[Individual, Individual]:
     """
     Create two offspring by combining genes of a parents with alpha and beta weights, where alpha and beta extend
     a range of possible gene values beyond the defined one by parents' genes
@@ -84,4 +87,7 @@ def alpha_beta_blend_crossover(parent1: Individual, parent2: Individual, alpha: 
     child1_genome = [random.uniform(min(gene1, gene2) - alpha * abs(gene1 - gene2), max(gene1, gene2) + beta * abs(gene1 - gene2)) for gene1, gene2 in zip(parent1.genome, parent2.genome)]
     child2_genome = [random.uniform(min(gene1, gene2) - alpha * abs(gene1 - gene2), max(gene1, gene2) + beta * abs(gene1 - gene2)) for gene1, gene2 in zip(parent1.genome, parent2.genome)]
 
-    return Individual(child1_genome), Individual(child2_genome)
+    child1_genome_after_bounds_checking = [max(bounds[0], min(gene, bounds[1])) for gene in child1_genome]
+    child2_genome_after_bounds_checking = [max(bounds[0], min(gene, bounds[1])) for gene in child2_genome]
+
+    return Individual(child1_genome_after_bounds_checking), Individual(child2_genome_after_bounds_checking)
