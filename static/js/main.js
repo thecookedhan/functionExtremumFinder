@@ -133,25 +133,27 @@ document.addEventListener('DOMContentLoaded', () => {
         selectionSelect?.addEventListener('change', updateSelection);
 
         // obsługa krzyżowania
-        const crossoverSelect = document.querySelector('select[name="crossover"]');
-        const updateCrossover = () => {
-            const val = crossoverSelect?.value;
-            const uniformDiv = document.getElementById('uniform-params');
-            if (uniformDiv) uniformDiv.classList.toggle('hidden', val !== 'uniform');
+const crossoverSelect = document.getElementById('crossover-select');
+const updateCrossover = () => {
+    const val = crossoverSelect?.value;
+    const alphaDiv = document.getElementById('blend-alpha-params');
+    const betaDiv = document.getElementById('blend-beta-params');
+    
+    // Pokaż alpha dla obu metod blend, beta tylko dla alpha-beta
+    alphaDiv?.classList.toggle('hidden', val === 'arithmetic');
+    betaDiv?.classList.toggle('hidden', val !== 'alpha_beta_blend');
+};
+crossoverSelect?.addEventListener('change', updateCrossover);
 
-        };
+const mutationSelect = document.getElementById('mutation-select');
+const updateMutation = () => {
+    const val = mutationSelect?.value;
+    const gaussianDiv = document.getElementById('gaussian-params');
+    
+    gaussianDiv?.classList.toggle('hidden', val !== 'gaussian');
+};
 
-        crossoverSelect?.addEventListener('change', updateCrossover);
-
-        // obsługa mutacji
-        const mutationSelect = document.querySelector('select[name="mutation"]');
-        const updateMutation = () => {
-            const val = mutationSelect?.value;
-            const bitFlipDiv = document.getElementById('bit-flip-params');
-            if (bitFlipDiv) bitFlipDiv.classList.toggle('hidden', val !== 'bit_flip');
-        };
-
-        mutationSelect?.addEventListener('change', updateMutation);
+mutationSelect?.addEventListener('change', updateMutation);
 
         // obsługa strategii elitarnej (pojawianie się pola pod przełącznikiem)
         const eliteToggle = document.getElementById('elite-toggle');
@@ -280,8 +282,7 @@ document.addEventListener('DOMContentLoaded', () => {
             row.className = "border-b border-white/10 hover:bg-white/5 transition-colors";
             row.innerHTML = `
                 <td class="p-4 font-semibold text-gray-700 w-20">x${idx + 1}</td>
-                <td class="p-4"><div class="bg-slate-900/5 p-3 rounded-xl font-mono text-blue-600 text-sm break-all">${v.binary}</div></td>
-                <td class="p-4 text-right font-mono text-gray-800 font-bold w-32">${v.real.toFixed(6)}</td>
+                <td class="p-4 text-right font-mono text-gray-800 font-bold">${v.real.toFixed(6)}</td>
             `;
             body.appendChild(row);
         });
@@ -303,31 +304,32 @@ document.addEventListener('DOMContentLoaded', () => {
             const raw = Object.fromEntries(formData.entries());
             
             const payload = {
-                "objective_function": raw.objectiveFunction,
-                "main_arguments": {
-                    "population_size": parseInt(raw.populationSize),
-                    "number_of_generations": parseInt(raw.numEpochs),
-                    "bounds": [parseFloat(raw.rangeFrom), parseFloat(raw.rangeTo)],
-                    "bits_per_variable": parseInt(raw.precision),
-                    "number_of_variables": parseInt(raw.numVariables),
-                    "elitism_size": formData.has('eliteStrategy') ? parseInt(raw.eliteSize || 2) : 0,
-                    "inversion_probability": formData.has('inversion') ? 0.1 : 0.0,
-                    "max_segment_ratio": parseFloat(raw.maxSegmentRatio || 0.2)
-                },
-                "selection_arguments": {
-                    "selection_method": raw.selection,
-                    "tournament_size": parseInt(raw.tournamentSize || 3),
-                    "best_percentage": parseFloat(raw.bestPercentage || 0.1)
-                },
-                "mutation_arguments": {
-                    "mutation_method": raw.mutation,
-                    "mutation_probability": parseFloat(raw.mutationProb || 0.05),
-                    "bit_mutation_rate": parseFloat(raw.bitMutationProb || 0.01)
-                },
-                "crossover_method": raw.crossover,
-                "crossover_probability": parseFloat(raw.crossoverProb || 0.8),
-                "uniform_crossover_rate": parseFloat(raw.geneExchangeProb || 0.5)
-            };
+    "objective_function": raw.objectiveFunction,
+    "main_arguments": {
+        "population_size": parseInt(raw.populationSize),
+        "number_of_generations": parseInt(raw.numEpochs),
+        "bounds": [parseFloat(raw.rangeFrom), parseFloat(raw.rangeTo)],
+        "number_of_variables": parseInt(raw.numVariables),
+        "elitism_size": formData.has('eliteStrategy') ? parseInt(raw.eliteSize || 2) : 0,
+    },
+    "selection_arguments": {
+        "selection_method": raw.selection,
+        "tournament_size": parseInt(raw.tournamentSize || 3),
+        "best_percentage": parseFloat(raw.bestPercentage || 0.1)
+    },
+    "crossover_arguments": {
+        "method": raw.crossover,
+        "probability": parseFloat(raw.crossoverProb || 0.8),
+        "alpha": parseFloat(raw.alpha || 0.5),
+        "beta": parseFloat(raw.beta || 0.5)
+    },
+    "mutation_arguments": {
+        "method": raw.mutation,
+        "individual_probability": parseFloat(raw.mutationProb || 0.05),
+        "gene_probability": parseFloat(raw.geneMutationProb || 0.01),
+        "sigma": parseFloat(raw.sigma || 0.1)
+    }
+};
 
             try {
                 const res = await fetch('/run_algorithm', {

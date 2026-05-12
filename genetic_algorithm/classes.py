@@ -2,77 +2,107 @@ from __future__ import annotations
 import random
 
 class Individual:
-    def __init__(self, genome: list[int], fitness: float = None): # create new Individual with binary list that represents a solution
+    def __init__(self, genome: list[float], fitness: float | None = None):
+        """
+        Create new Individual as real number list that represents a solution
+        """
         if not genome:
             raise ValueError("Genome cannot be empty")
 
         self.genome = genome
         self.fitness = fitness
 
-    def split_genome_by_variables(self, bits_per_variable: int) -> list[list[int]]:
-        return [self.genome[i:i + bits_per_variable] for i in range(0, len(self.genome), bits_per_variable)]
 
-    def decode(self, bounds: list[float], bits_per_variable: int) -> float: # decode biniary solution list into float in a given bounds
-        decimal_genome = []
-        genome_splitted_by_variables = self.split_genome_by_variables(bits_per_variable)
+    def evaluate(self, fitness_function) -> None:
+        """
+        Calculate fitness function value based on a solution list
+        """
+        self.fitness = fitness_function(self.genome)
 
-        for i, variable_genome in enumerate(genome_splitted_by_variables):
-            decimal_variable_genome = int(''.join(map(str, variable_genome)), 2)
-            decimal_variable_genome = bounds[0] + (decimal_variable_genome / (2**bits_per_variable - 1) * (bounds[1] - bounds[0]))
-            decimal_genome.append(decimal_variable_genome)
-
-        return decimal_genome
-
-    def evaluate(self, fitness_function, bounds: list[float], bits_per_variable: int): # calculate fitness function value based on a decoded solution list
-        decoded_genome = self.decode(bounds, bits_per_variable)
-        self.fitness = fitness_function(decoded_genome)
-
-    def copy(self) -> Individual: # create copy of an individual
+    def copy(self) -> Individual:
+        """
+        Create a deep copy of an individual
+        """
         return Individual(self.genome.copy(), self.fitness)
 
-    def __len__(self) -> int: # return length of a binary solution list
+    def __len__(self) -> int:
+        """
+        Return length of a solution list
+        """
         return len(self.genome)
     
 class Population:
-    def __init__(self, population_size: int, individuals: list[Individual] = None): # get input population size or create population when list of individuals is given
+    def __init__(self, population_size: int, individuals: list[Individual] | None = None):
+        """
+        Get input population size or create population when list of individuals is given
+        """
         if individuals is None:
             self.individuals = []
         else:
+            if len(individuals) != population_size:
+                raise ValueError("Population size does not match individuals count")
             self.individuals = individuals
         
         if population_size <= 0:
             raise ValueError("Population size must be positive")
         self.population_size = population_size
 
-    def initialize(self, genome_length: int): # create new population filled with individuals with given solution accuracy/length
+    def initialize(self, number_of_variables: int, bounds: list[float]) -> None:
+        """
+        Create new population filled with individuals based on given genome length and bounds
+        """
         self.clear()
 
         for _ in range(self.population_size):
-            genome = [random.randint(0, 1) for _ in range(genome_length)]
+            genome = [random.uniform(bounds[0], bounds[1]) for i in range(number_of_variables)]
             self.add_individual(Individual(genome))
 
-    def evaluate(self, fitness_function, bounds: list[float], bits_per_variable: int): # calculate fitness function value based on a decoded solution list for a whole population
+    def evaluate(self, fitness_function) -> None:
+        """
+        Calculate fitness function value based on a solution list for a whole population
+        """
         for individual in self.individuals:
-            individual.evaluate(fitness_function, bounds, bits_per_variable)
+            individual.evaluate(fitness_function)
 
-    def get_best_individual(self) -> Individual: # return an individual which has the best solution in a population
-        return min(self.individuals, key=lambda ind: ind.fitness)
+    def get_best_individual(self) -> Individual: 
+        """
+        Return the individual with the lowest fitness value (minimization problem)
+        """
+        return min(self.individuals, key = lambda ind: ind.fitness)
     
-    def get_worst_individual(self) -> Individual: # return an individual which has the worst solution in a population
-        return max(self.individuals, key=lambda ind: ind.fitness)
+    def get_worst_individual(self) -> Individual: 
+        """
+        Return the individual with the highest fitness value (minimization problem)
+        """
+        return max(self.individuals, key = lambda ind: ind.fitness)
     
-    def get_median_individual(self) -> Individual: # return an individual which has an average solution in a population
-        self.sort(descending=False)
-        return self.individuals[len(self.individuals) // 2]
+    def get_median_individual(self) -> Individual:
+        """
+        Return an individual which has an median solution in a population
+        """
+        sorted_population = sorted(self.individuals, key = lambda ind: ind.fitness)
+        return sorted_population[len(sorted_population) // 2]
 
-    def add_individual(self, individual: Individual): # add a single new individual to a population
+    def add_individual(self, individual: Individual):
+        """
+        Add a single new individual to a population
+        """
         self.individuals.append(individual)
 
-    def clear(self): # clear population
+    def clear(self):
+        """
+        Clear population by removing all individuals from it
+        """
         self.individuals = []
 
-    def sort(self, descending: bool): # sort population by fitness value in descending/ascending order
+    def sort(self, descending: bool):
+        """
+        Sort population by fitness value in descending/ascending order
+        """
         self.individuals.sort(key = lambda ind: ind.fitness, reverse = descending)
 
-    def __len__(self) -> int: # return population length, which is simply a number of individuals in a population
+    def __len__(self) -> int:
+        """
+        Return population length, which is simply a number of individuals in a population
+        """
         return len(self.individuals)

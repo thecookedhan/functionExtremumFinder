@@ -83,13 +83,6 @@
                            style="background: rgba(255, 255, 255, 0.4)">
                 </div>
             </div>
-
-            <div class="space-y-2">
-                <label class="text-sm font-medium text-gray-700">Dokładność bitowa dla jednej zmiennej</label>
-                <input type="number" name="precision" value="20" min="1" max="64"
-                       class="w-full p-2 rounded-xl border border-white/50 backdrop-blur-sm focus:border-pink-300 outline-none"
-                       style="background: rgba(255, 255, 255, 0.4)">
-            </div>
         </div>
 
         <div class="h-px bg-gradient-to-r from-transparent via-white/50 to-transparent my-4"></div>
@@ -97,83 +90,77 @@
         <div class="space-y-3 p-3 rounded-2xl bg-white/20 border border-white/30">
             <div class="space-y-2">
                 <label class="text-sm font-bold text-gray-600">Metoda selekcji</label>
-                <select name="selection" id="selection-select"
-                        class="w-full p-2 rounded-xl border border-white/50 backdrop-blur-sm focus:border-blue-300 outline-none appearance-none cursor-pointer"
-                        style="background: rgba(255, 255, 255, 0.4)">
+                <select name="selection" id="selection-select" class="w-full p-2 rounded-xl border border-white/50 backdrop-blur-sm outline-none cursor-pointer" style="background: rgba(255, 255, 255, 0.4)">
                     <option value="best">Najlepszych</option>
                     <option value="roulette" selected>Ruletka</option>
                     <option value="tournament">Turniejowa</option>
                 </select>
             </div>
-
             <div id="tournament-params" class="hidden animate-in fade-in slide-in-from-top-1 space-y-1">
                 <label class="text-[11px] font-bold text-blue-600 uppercase tracking-wider ml-1">Rozmiar turnieju</label>
-                <input type="number" name="tournamentSize" value="3" min="2"
-                       class="w-full p-2 rounded-xl border border-blue-200 focus:border-blue-400 outline-none text-sm"
-                       style="background: rgba(235, 245, 255, 0.5)">
+                <input type="number" name="tournamentSize" value="3" min="2" class="w-full p-2 rounded-xl border border-blue-200 outline-none text-sm" style="background: rgba(235, 245, 255, 0.5)">
             </div>
-
             <div id="best-params" class="hidden animate-in fade-in slide-in-from-top-1 space-y-1">
                 <label class="text-[11px] font-bold text-pink-600 uppercase tracking-wider ml-1">Procent najlepszych (0-1)</label>
-                <input type="number" name="bestPercentage" value="0.1" min="0.01" max="1" step="0.01"
-                       class="w-full p-2 rounded-xl border border-pink-200 focus:border-pink-400 outline-none text-sm"
-                       style="background: rgba(255, 240, 245, 0.5)">
+                <input type="number" name="bestPercentage" value="0.1" min="0.01" max="1" step="0.01" class="w-full p-2 rounded-xl border border-pink-200 outline-none text-sm" style="background: rgba(255, 240, 245, 0.5)">
             </div>
         </div>
 
+        <!-- KRZYŻOWANIE -->
         <div class="space-y-3 p-3 rounded-2xl bg-white/20 border border-white/30">
             <div class="space-y-2">
                 <label class="text-sm font-bold text-gray-600">Metoda krzyżowania</label>
-                <select name="crossover" id="crossover-select"
-                        class="w-full p-2 rounded-xl border border-white/50 backdrop-blur-sm focus:border-blue-300 outline-none"
-                        style="background: rgba(255, 255, 255, 0.4)">
-                    <option value="one_point">Jednopunktowe</option>
-                    <option value="two_point">Dwupunktowe</option>
-                    <option value="uniform">Jednorodne</option>
-                    <option value="discrete">Ziarniste</option>
+                <select name="crossover" id="crossover-select" class="w-full p-2 rounded-xl border border-white/50 backdrop-blur-sm focus:border-blue-300 outline-none" style="background: rgba(255, 255, 255, 0.4)">
+                    <option value="arithmetic" selected>Arytmetyczna</option>
+                    <option value="alpha_blend">Mieszające alpha</option>
+                    <option value="alpha_beta_blend">Mieszające alfa-beta</option>
                 </select>
             </div>
             <div class="space-y-1">
-                <label class="text-[11px] font-medium text-gray-500 ml-1">Prawdopodobieństwo krzyżowania (ogólne)</label>
-                <input type="number" name="crossoverProb" value="0.8" step="0.05" min="0" max="1"
-                       class="w-full p-1.5 text-sm rounded-lg border border-white/30 outline-none focus:border-blue-200"
-                       style="background: rgba(255, 255, 255, 0.2)">
+                <label class="text-[11px] font-medium text-gray-500 ml-1">Prawdopodobieństwo krzyżowania</label>
+                <input type="number" name="crossoverProb" value="0.8" step="0.05" min="0" max="1" class="w-full p-1.5 text-sm rounded-lg border border-white/30 outline-none" style="background: rgba(255, 255, 255, 0.2)">
             </div>
-            <div id="uniform-params" class="hidden animate-in fade-in space-y-1">
-                <label class="text-[11px] font-bold text-blue-600 uppercase tracking-wider ml-1">Prawd. zamiany genu (0-1)</label>
-                <input type="number" name="geneExchangeProb" value="0.5" step="0.05" min="0" max="1"
-                       class="w-full p-1.5 text-sm rounded-lg border border-blue-200 outline-none"
-                       style="background: rgba(235, 245, 255, 0.5)">
+            <!-- Dynamiczne parametry BLEND -->
+            <div id="blend-alpha-params" class="hidden grid grid-cols-1 gap-2 animate-in fade-in slide-in-from-top-1">
+                <div class="space-y-1">
+                    <label class="text-[11px] font-bold text-blue-600 uppercase tracking-wider ml-1">Parametr Alpha</label>
+                    <input type="number" name="alpha" value="0.5" step="0.1" class="w-full p-2 rounded-xl border border-blue-200 text-sm" style="background: rgba(235, 245, 255, 0.5)">
+                </div>
+            </div>
+            <div id="blend-beta-params" class="hidden grid grid-cols-1 gap-2 animate-in fade-in slide-in-from-top-1">
+                <div class="space-y-1">
+                    <label class="text-[11px] font-bold text-blue-600 uppercase tracking-wider ml-1">Parametr Beta</label>
+                    <input type="number" name="beta" value="0.5" step="0.1" class="w-full p-2 rounded-xl border border-blue-200 text-sm" style="background: rgba(235, 245, 255, 0.5)">
+                </div>
             </div>
         </div>
 
+        <!-- MUTACJA -->
         <div class="space-y-3 p-3 rounded-2xl bg-white/20 border border-white/30">
             <div class="space-y-2">
                 <label class="text-sm font-bold text-gray-600">Metoda mutacji</label>
-                <select name="mutation" id="mutation-select"
-                        class="w-full p-2 rounded-xl border border-white/50 backdrop-blur-sm focus:border-blue-300 outline-none"
-                        style="background: rgba(255, 255, 255, 0.4)">
-                    <option value="bit_flip" selected>Jednopunktowa</option>
-                    <option value="two_bits">Dwupunktowa</option>
-                    <option value="edge">Brzegowa</option>
+                <select name="mutation" id="mutation-select" class="w-full p-2 rounded-xl border border-white/50 backdrop-blur-sm focus:border-blue-300 outline-none" style="background: rgba(255, 255, 255, 0.4)">
+                    <option value="uniform" selected>Równomierna</option>
+                    <option value="gaussian">Gaussa</option>
                 </select>
             </div>
             <div class="space-y-1">
-                <label class="text-[11px] font-medium text-gray-500 ml-1">Prawdopodobieństwo mutacji (ogólne)</label>
-                <input type="number" name="mutationProb" value="0.05" step="0.01" min="0" max="1"
-                       class="w-full p-1.5 text-sm rounded-lg border border-white/30 outline-none focus:border-blue-200"
-                       style="background: rgba(255, 255, 255, 0.2)">
+                <label class="text-[11px] font-medium text-gray-500 ml-1">Prawdopodobieństwo mutacji osobnika</label>
+                <input type="number" name="mutationProb" value="0.05" step="0.01" min="0" max="1" class="w-full p-1.5 text-sm rounded-lg border border-white/30 outline-none" style="background: rgba(255, 255, 255, 0.2)">
             </div>
-            <div id="bit-flip-params" class="hidden animate-in fade-in space-y-1">
-                <label class="text-[11px] font-bold text-purple-600 uppercase tracking-wider ml-1">Prawd. zmiany bitu (0-1)</label>
-                <input type="number" name="bitMutationProb" value="0.01" step="0.001" min="0" max="1"
-                       class="w-full p-1.5 text-sm rounded-lg border border-purple-200 outline-none"
-                       style="background: rgba(250, 240, 255, 0.5)">
+            <!-- Parametr wspólny dla obu: Zmiana genu -->
+            <div class="space-y-1">
+                <label class="text-[11px] font-bold text-purple-600 uppercase tracking-wider ml-1">Prawd. zmiany genu</label>
+                <input type="number" name="geneMutationProb" value="0.01" step="0.01" min="0" max="1" class="w-full p-2 rounded-xl border border-purple-200 text-sm" style="background: rgba(250, 240, 255, 0.5)">
+            </div>
+            <!-- Specyficzne dla Gaussa -->
+            <div id="gaussian-params" class="hidden animate-in fade-in slide-in-from-top-1 space-y-1">
+                <label class="text-[11px] font-bold text-purple-600 uppercase tracking-wider ml-1">Odchylenie standardowe (σ)</label>
+                <input type="number" name="sigma" value="0.1" step="0.01" class="w-full p-2 rounded-xl border border-purple-200 text-sm" style="background: rgba(250, 240, 255, 0.5)">
             </div>
         </div>
 
-        <div class="h-px bg-gradient-to-r from-transparent via-white/50 to-transparent my-4"></div>
-
+        <!-- ELITA -->
         <div class="p-3 rounded-xl space-y-3" style="background: rgba(255, 255, 255, 0.3)">
             <div class="flex items-center justify-between">
                 <span class="text-sm text-gray-700 font-medium">Strategia elitarna</span>
@@ -182,36 +169,13 @@
                     <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-400"></div>
                 </label>
             </div>
-
             <div id="elite-params" class="animate-in fade-in slide-in-from-top-1 space-y-1">
                 <label class="text-[11px] font-bold text-purple-600 uppercase tracking-wider ml-1">Rozmiar grupy elitarnej</label>
-                <input type="number" name="eliteSize" value="2" min="1"
-                    class="w-full p-2 rounded-xl border border-purple-200 focus:border-purple-400 outline-none text-sm"
-                    style="background: rgba(250, 240, 255, 0.5)">
+                <input type="number" name="eliteSize" value="2" min="1" class="w-full p-2 rounded-xl border border-purple-200 text-sm" style="background: rgba(250, 240, 255, 0.5)">
             </div>
         </div>
 
-            <div class="p-3 rounded-xl space-y-3" style="background: rgba(255, 255, 255, 0.3)">
-                <div class="flex items-center justify-between">
-                    <span class="text-sm text-gray-700 font-medium">Operator inwersji</span>
-                    <label class="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" name="inversion" id="inversion-toggle" class="sr-only peer">
-                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-400"></div>
-                    </label>
-                </div>
-
-                <div id="inversion-params" class="hidden animate-in fade-in slide-in-from-top-1 space-y-1">
-                    <label class="text-[11px] font-bold text-purple-600 uppercase tracking-wider ml-1">% długości ulegający inwersji (0-1)</label>
-                    <input type="number" name="maxSegmentRatio" value="0.2" step="0.05" min="0.05" max="1"
-                        class="w-full p-2 rounded-xl border border-purple-200 focus:border-purple-400 outline-none text-sm"
-                        style="background: rgba(250, 240, 255, 0.5)">
-                </div>
-            </div>
-
-
-        <button type="submit" id="runBtn"
-                class="w-full mt-6 py-4 rounded-2xl font-semibold text-white flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50"
-                style="background: linear-gradient(135deg, #f3aad1 0%, #f3aaf0 100%); box-shadow: 0 10px 30px rgba(243, 170, 209, 0.4);">
+        <button type="submit" id="runBtn" class="w-full mt-6 py-4 rounded-2xl font-semibold text-white flex items-center justify-center gap-2 transition-all hover:scale-[1.02]" style="background: linear-gradient(135deg, #f3aad1 0%, #f3aaf0 100%); box-shadow: 0 10px 30px rgba(243, 170, 209, 0.4);">
             <i data-lucide="play" class="w-5 h-5 fill-current"></i>
             <span id="btnText">Uruchom algorytm</span>
         </button>
