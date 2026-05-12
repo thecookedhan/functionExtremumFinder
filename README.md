@@ -1,5 +1,6 @@
-# Function Extremum Finder
-Aplikacja służąca do znajdowania ekstremów funkcji matematycznych. Pozwala na szybką analizę przebiegu zmienności funkcji z wykorzystaniem Pythona.
+# Genetic Function Optimizer
+
+Interaktywna aplikacja webowa do znajdowania ekstremów funkcji matematycznych z wykorzystaniem algorytmu genetycznego. Projekt pozwala konfigurować parametry ewolucji, uruchamiać obliczenia dla wybranych funkcji testowych oraz analizować wyniki na wykresach i w tabeli końcowych wartości zmiennych.
 
 ## Wymagania
 - Python 3.10 lub nowszy
@@ -34,40 +35,44 @@ Aby uruchomić aplikację, należy wykonać poniższą komendę w głównym fold
 python app.py
 ```
 
-## Technology Stack
+## Stack technologiczny
 
 | GDZIE | CO |
 | :--- | :--- |
-| **Backend** | ![Flask](https://img.shields.io/badge/flask-%23000.svg?style=for-the-badge&logo=flask&logoColor=white) |
+| **Backend** | ![Python](https://img.shields.io/badge/python-3670A0.svg?style=for-the-badge&logo=python&logoColor=ffdd54) ![Flask](https://img.shields.io/badge/flask-%23000.svg?style=for-the-badge&logo=flask&logoColor=white) |
 | **Style** | ![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white) ![Bootstrap](https://img.shields.io/badge/bootstrap-%238511FA.svg?style=for-the-badge&logo=bootstrap&logoColor=white) |
 | **Wizualizacja danych** | ![Plotly](https://img.shields.io/badge/Plotly-%233F4F75.svg?style=for-the-badge&logo=plotly&logoColor=white) |
 | **Ikonki** | ![Lucide](https://img.shields.io/badge/Lucide-Icons-orange?style=for-the-badge&logo=lucide) |
 
+## Porównanie wyników v1.0.0 do v2.0.0
+
+W wersji `v2.0.0` algorytm został przebudowany z reprezentacji binarnej na reprezentację rzeczywistą. Dzięki temu osobniki przechowują bezpośrednio wartości zmiennych, bez konieczności kodowania ich jako ciągów bitów i późniejszego dekodowania. Zmiana **uprościła konfigurację** aplikacji, **skróciła czas** obliczeń i **poprawiła dokładność** wyników dla większości testowanych funkcji.
+
+W związku ze zmianą reprezentacji wartości zmiennych w algorytmie pojawiły się nowe operatory dopasowane do optymalizacji ciągłej, między innymi mutacja równomierna, mutacja Gaussa oraz krzyżowania arytmetyczne, mieszające, uśredniające i liniowe.
+
+| Funkcja | Typ algorytmu genetycznego | Czas wykonania [s] | Wartość funkcji celu | Wartości zmiennych |
+| :--- | :--- | :--- | :--- | :--- |
+| sphere      | binarny     | 0.108     | 3.70 × 10⁻⁷     | (0.0002, -0.0006) |
+| sphere      | rzeczywisty | 0.083     | 2.02 × 10⁻¹¹    | (0.0000, 0.0000) |
+| rastrigin   | binarny     | 0.109     | 5.38 × 10⁻⁶     | (-0.0002, 0.0000) |
+| rastrigin   | rzeczywisty | 0.086     | 4.39 × 10⁻⁸     | (0.0000, 0.0000) |
+| ackley      | binarny     | 0.113     | 1.18 × 10⁻³     | (-0.0004, -0.0001) |
+| ackley      | rzeczywisty | 0.090     | 2.07 × 10⁻⁹     | (0.0000, 0.0000) |
+| rosenbrock  | binarny     | 0.110     | 2.35 × 10⁻⁴     | (0.985, 0.970) |
+| rosenbrock  | rzeczywisty | 0.085     | 8.08 × 10⁻¹²    | (1.000, 1.000) |
+| michalewicz | binarny     | 0.107     | -1.801          | (2.203, 1.571) |
+| michalewicz | rzeczywisty | 0.087     | -1.800          | (2.198, 1.576) |
+
+
 ## Demo
 
-Poniżej zamieszczono zrzuty ekranu z przykładowego, demonstracyjnego użycia aplikacji :)
+Poniżej zamieszczono przykładowe wynik działania aplikacji po uruchomieniu algorytmu w wersji `v1.0.0` oraz `v2.0.0`. W najnowszej wersji panel użytkownika został dostosowany pod algorytm rzeczywisty, tabela wyników pokazuje końcowe wartości zmiennych wprost, a tło aplikacji zostało odświeżone.
 
-### Interfejs
-<img width="1887" height="872" alt="image" src="https://github.com/user-attachments/assets/696139ee-c90a-4278-96ec-c2e7bfd15776" />
+### Przykładowy wynik działania v1.0.0
+<img alt="application example run for v1.0.0" src="https://github.com/user-attachments/assets/81e004c3-c4cb-4e83-82af-5b3ca9b19313" />
 
-### Panel konfiguracji algorytmu
-<img width="160" height="669" alt="image" src="https://github.com/user-attachments/assets/077790ad-ac95-4501-b578-1e0219ea2449" />
+### Przykładowy wynik działania v2.0.0
 
-### Stopka
-<img width="1859" height="179" alt="image" src="https://github.com/user-attachments/assets/c1857859-9cac-4367-ad1c-41fd310ffcbc" />
+<img alt="application example run for v2.0.0" src="run_example.png" />
 
-### Przykładowy wynik działania
-<img width="735" height="672" alt="image" src="https://github.com/user-attachments/assets/81e004c3-c4cb-4e83-82af-5b3ca9b19313" />
 
-### Blokowanie konfiguracji i domyślne przedziały
-<img width="409" height="363" alt="image" src="https://github.com/user-attachments/assets/bd56dba7-3475-4e34-9067-15e85e93e0f7" />
-
-### Easter egg
-<img width="114" height="99" alt="image" src="https://github.com/user-attachments/assets/61bd15d3-b974-477c-ba44-a53b959e2ead" />
-
-### Konfetti
-<img width="1885" height="864" alt="image" src="https://github.com/user-attachments/assets/7c6f2a23-5dd1-4401-9529-e4396e1f977a" />
-
-### FAB scroll
-<img width="91" height="92" alt="image" src="https://github.com/user-attachments/assets/0de6272f-c6e4-4a35-be95-a62d35d176bc" />
-<img width="82" height="83" alt="image" src="https://github.com/user-attachments/assets/2329d508-b3e2-4fb4-9bbe-ab25e647df0d" />
