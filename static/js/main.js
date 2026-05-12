@@ -141,7 +141,7 @@ const updateCrossover = () => {
     
     // Pokaż alpha dla obu metod blend, beta tylko dla alpha-beta
     alphaDiv?.classList.toggle('hidden', val === 'arithmetic');
-    betaDiv?.classList.toggle('hidden', val !== 'blend_alpha_beta');
+    betaDiv?.classList.toggle('hidden', val !== 'alpha_beta_blend');
 };
 crossoverSelect?.addEventListener('change', updateCrossover);
 
