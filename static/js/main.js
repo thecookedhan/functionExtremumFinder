@@ -282,8 +282,7 @@ mutationSelect?.addEventListener('change', updateMutation);
             row.className = "border-b border-white/10 hover:bg-white/5 transition-colors";
             row.innerHTML = `
                 <td class="p-4 font-semibold text-gray-700 w-20">x${idx + 1}</td>
-                <td class="p-4"><div class="bg-slate-900/5 p-3 rounded-xl font-mono text-blue-600 text-sm break-all">${v.binary}</div></td>
-                <td class="p-4 text-right font-mono text-gray-800 font-bold w-32">${v.real.toFixed(6)}</td>
+                <td class="p-4 text-right font-mono text-gray-800 font-bold">${v.real.toFixed(6)}</td>
             `;
             body.appendChild(row);
         });
