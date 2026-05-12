@@ -1,6 +1,5 @@
 from flask import Flask, render_template, request, jsonify
 import time
-import math
 import traceback
 from genetic_algorithm.ga_core import GeneticAlgorithm
 import benchmark_functions as bf
@@ -52,7 +51,6 @@ def run_algorithm():
         bounds = main_args.get('bounds', [0, 3.1415])
         pop_size = int(main_args.get('population_size', 100))
         epochs = int(main_args.get('number_of_generations', 50))
-        precision = int(main_args.get('bits_per_variable', 16))
         elitism_size = int(main_args.get('elitism_size', 0))
 
         # Metody
@@ -92,34 +90,29 @@ def run_algorithm():
             number_of_generations=epochs,
             fitness_function=fitness_wrapper,
             bounds=bounds,
-            bits_per_variable=precision,
             number_of_variables=num_vars,
             selection_method=selection,
-            crossover_method=crossover,
-            crossover_probability=cross_prob,
-            mutation_method=mutation,
-            mutation_probability=mut_prob,
-            elitism_size=elitism_size,
             tournament_size=int(sel_args.get('tournament_size', 3)),
             best_percentage=float(sel_args.get('best_percentage', 0.1)),
-            alpha=alpha,
-            beta=beta,
-            gene_mutation_rate=gene_mut_prob,
-            sigma=sigma
+            mutation_method=mutation,
+            mutation_probability=mut_prob,
+            uniform_mutation_rate=gene_mut_prob,
+            gaussian_mutation_rate=0,
+            gaussian_mutation_scale=0,
+            crossover_method=crossover,
+            crossover_probability=cross_prob,
+            alpha_weight_for_blend_crossover=alpha,
+            beta_weight_for_blend_crossover=beta,
+            elitism_size=elitism_size   
         )
 
         ga.run()
-
-        # dekodowanie najlepszego osobnika do czytelnej formy
-        decoded_vars = ga.best_individual.decode(ga.bounds, ga.bits_per_variable)
-        binary_segments = ga.best_individual.split_genome_by_variables(ga.bits_per_variable)
         
         variables_to_front = []
-        for i in range(len(decoded_vars)):
+        for i in range(len(ga.best_individual.genome)):
             variables_to_front.append({
                 "index": i + 1,
-                "binary": "".join(map(str, binary_segments[i])),
-                "real": decoded_vars[i]
+                "real": ga.best_individual.genome[i],
             })
 
         history_to_front = []
