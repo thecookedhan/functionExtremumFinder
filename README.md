@@ -73,6 +73,7 @@ Poniżej zamieszczono przykładowe wynik działania aplikacji po uruchomieniu al
 
 ### Przykładowy wynik działania v2.0.0
 
-<img alt="application example run for v2.0.0" src="run_example.png" />
+<img alt="application example run for v2.0.0" src="https://github.com/user-attachments/assets/5d38eb39-fe5b-45ba-920d-7feb464c0637" />
+
 
 
