@@ -47,14 +47,14 @@ class Population:
             raise ValueError("Population size must be positive")
         self.population_size = population_size
 
-    def initialize(self, genome_length: int, bounds: list[tuple[float, float]]) -> None:
+    def initialize(self, number_of_variables: int, bounds: list[float]) -> None:
         """
         Create new population filled with individuals based on given genome length and bounds
         """
         self.clear()
 
         for _ in range(self.population_size):
-            genome = [random.uniform(bounds[i][0], bounds[i][1]) for i in range(genome_length)]
+            genome = [random.uniform(bounds[0], bounds[1]) for i in range(number_of_variables)]
             self.add_individual(Individual(genome))
 
     def evaluate(self, fitness_function) -> None:

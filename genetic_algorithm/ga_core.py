@@ -3,16 +3,18 @@ from .ga_operators import *
 import random
 
 class GeneticAlgorithm:
-    def __init__(self, population_size: int, number_of_generations: int, fitness_function, bounds: list[float], bits_per_variable: int, number_of_variables: int, 
-                 selection_method: str = "tournament", tournament_size: int = 3, best_percentage: float = 0.05, mutation_method: str = "bit_flip", 
-                 mutation_probability: float = 0.2, bit_mutation_rate: float = 0.01, max_segment_ratio: float = 0.3, crossover_method: str = "one_point", 
-                 crossover_probability: float = 0.75, uniform_crossover_rate: float = 0.1, elitism_size: int = 0): # initialize genetic algorithm parameters, operators and population
+    def __init__(self, population_size: int, number_of_generations: int, fitness_function, bounds: list[float], number_of_variables: int, 
+                 selection_method: str = "tournament", tournament_size: int = 3, best_percentage: float = 0.05, mutation_method: str = "uniform", 
+                 mutation_probability: float = 0.2, uniform_mutation_rate: float = 0.01, gaussian_mutation_rate: float = 0.1, gaussian_mutation_scale: float = 1.0, crossover_method: str = "arithmetic", 
+                 crossover_probability: float = 0.75, alpha_weight_for_blend_crossover: float = 0.1, beta_weight_for_blend_crossover: float = 0.1, elitism_size: int = 0):
+        """ 
+        Initialize genetic algorithm parameters, operators and population
+        """
         self.population_size = population_size
         self.number_of_generations = number_of_generations
 
         self.fitness_function = fitness_function
         self.bounds = bounds
-        self.bits_per_variable = bits_per_variable
         self.number_of_variables = number_of_variables
 
         self.selection_method = selection_method
@@ -20,13 +22,15 @@ class GeneticAlgorithm:
 
         self.mutation_method = mutation_method
         self.mutation_probability = mutation_probability
-        self.bit_mutation_rate = bit_mutation_rate
-        self.max_segment_ratio = max_segment_ratio
+        self.uniform_mutation_rate = uniform_mutation_rate
+        self.gaussian_mutation_rate = gaussian_mutation_rate
+        self.gaussian_mutation_scale = gaussian_mutation_scale
 
         self.crossover_method = crossover_method
         self.crossover_probability = crossover_probability
-        self.uniform_crossover_rate = uniform_crossover_rate
-        
+        self.alpha_weight_for_blend_crossover = alpha_weight_for_blend_crossover
+        self.beta_weight_for_blend_crossover = beta_weight_for_blend_crossover
+
         self.best_percentage = best_percentage
         self.elitism_size = elitism_size
 
@@ -41,14 +45,22 @@ class GeneticAlgorithm:
         self.median_fitness_history = []
         self.epochs = []
 
-    def initialize_population(self): # create initial population with random genomes (binary solution lists)
-        genome_length = self.bits_per_variable * self.number_of_variables
-        self.population.initialize(genome_length)
+    def initialize_population(self):
+        """
+        Create initial population with random genomes
+        """
+        self.population.initialize(self.number_of_variables, self.bounds)
 
-    def evaluate_population(self): # compute fitness function value for every individual in the population
-        self.population.evaluate(self.fitness_function, self.bounds, self.bits_per_variable)
+    def evaluate_population(self):
+        """
+        Compute fitness function value for every individual in the population
+        """
+        self.population.evaluate(self.fitness_function)
 
-    def select_parents(self): # select two individuals from the population using the chosen selection method
+    def select_parents(self): 
+        """
+        Select two individuals from the population using the chosen selection method
+        """
         if self.selection_method == "tournament":
             parent1 = tournament_selection(self.population, self.tournament_size)
             parent2 = tournament_selection(self.population, self.tournament_size)
@@ -66,48 +78,54 @@ class GeneticAlgorithm:
 
         return parent1, parent2
 
-    def crossover(self, parent1: Individual, parent2: Individual): # generate new individuals using the selected crossover operator
+    def crossover(self, parent1: Individual, parent2: Individual):
+        """
+        Generate new individuals using the selected crossover operator
+        """
         if random.random() > self.crossover_probability:
             return parent1.copy(), parent2.copy()
     
-        if self.crossover_method == "one_point":
-            child1, child2 = one_point_crossover(parent1, parent2)
+        if self.crossover_method == "arithmetic":
+            child1, child2 = arithmetic_crossover(parent1, parent2)
 
-        elif self.crossover_method == "two_point":
-            child1, child2 = two_point_crossover(parent1, parent2)
+        elif self.crossover_method == "average":
+            child = average_crossover([parent1, parent2])
+            return child, child.copy()
 
-        elif self.crossover_method == "uniform":
-            child1, child2 = uniform_crossover(parent1, parent2, self.uniform_crossover_rate)
+        elif self.crossover_method == "alpha_blend":
+            child1, child2 = alpha_blend_crossover(parent1, parent2, self.alpha_weight_for_blend_crossover, self.bounds)
 
-        elif self.crossover_method == "discrete":
-            child1 = discrete_crossover(parent1, parent2)
-            child2 = discrete_crossover(parent2, parent1)
+        elif self.crossover_method == "alpha_beta_blend":
+            child1, child2 = alpha_beta_blend_crossover(parent1, parent2, self.alpha_weight_for_blend_crossover, self.beta_weight_for_blend_crossover, self.bounds)
+
+        elif self.crossover_method == "linear":
+            child1, child2 = linear_crossover(parent1, parent2, self.bounds, self.fitness_function)
 
         else:
             raise ValueError("Unknown crossover method")
         
         return child1, child2
 
-    def mutate(self, individual: Individual): # apply selected mutation operator to a single individual
+    def mutate(self, individual: Individual): 
+        """
+        Apply selected mutation operator to a single individual
+        """
         if random.random() > self.mutation_probability:
             return
     
-        if self.mutation_method == "bit_flip":
-            bit_flip_mutation(individual, self.bit_mutation_rate)
+        if self.mutation_method == "uniform":
+            uniform_mutation(individual, self.uniform_mutation_rate, self.bounds)
 
-        elif self.mutation_method == "two_bits":
-            two_bits_flip_mutation(individual)
-
-        elif self.mutation_method == "edge":
-            edge_mutation(individual)
-
-        elif self.mutation_method == "inversion":
-            inversion_mutation(individual, self.max_segment_ratio)
+        elif self.mutation_method == "gaussian":
+            gaussian_mutation(individual, self.gaussian_mutation_rate, self.gaussian_mutation_scale, self.bounds)
 
         else:
             raise ValueError("Unknown mutation method")
 
-    def create_new_population(self): # generate a new population using selection, crossover and mutation
+    def create_new_population(self):
+        """
+        Generate a new population using selection, crossover and mutation
+        """
         new_population = Population(self.population_size)
 
         if self.elitism_size > 0:
@@ -116,7 +134,7 @@ class GeneticAlgorithm:
             for elite in elites:
                 new_population.add_individual(elite.copy())
 
-        while len(new_population) < self.population_size - self.elitism_size:
+        while len(new_population) < self.population_size:
             parent1, parent2 = self.select_parents()
             child1, child2 = self.crossover(parent1, parent2)
 
@@ -125,12 +143,15 @@ class GeneticAlgorithm:
 
             new_population.add_individual(child1)
 
-            if len(new_population) < self.population_size - self.elitism_size:
+            if len(new_population) < self.population_size:
                 new_population.add_individual(child2)
 
         self.population = new_population
 
-    def run(self): # execute the genetic algorithm for the specified number of generations
+    def run(self): 
+        """
+        Execute the genetic algorithm for the specified number of generations
+        """
         self.initialize_population()
         self.evaluate_population()
 
@@ -150,7 +171,10 @@ class GeneticAlgorithm:
 
             self.epochs.append(generation)
 
-    def update_best_solution(self): # track and save fitness value of the best individual found so far in the population
+    def update_best_solution(self): 
+        """
+        Track and save fitness value of the best individual found so far in the population
+        """
         best_in_generation = self.population.get_best_individual()
 
         if self.best_individual is None:
@@ -161,7 +185,10 @@ class GeneticAlgorithm:
 
         self.best_fitness_history.append(self.best_individual.fitness)
 
-    def update_worst_solution(self): # track and save fitness value of the worst individual found so far in the population
+    def update_worst_solution(self): 
+        """
+        Track and save fitness value of the worst individual found so far in the population
+        """
         worst_in_generation = self.population.get_worst_individual()
 
         if self.worst_individual is None:
@@ -172,7 +199,10 @@ class GeneticAlgorithm:
         
         self.worst_fitness_history.append(self.worst_individual.fitness)
 
-    def update_median_solution(self): # track and save fitness value of the median individual found so far in the population
+    def update_median_solution(self): 
+        """
+        Track and save fitness value of the median individual found so far in the population
+        """
         median_in_generation = self.population.get_median_individual()
 
         if self.median_individual is None:

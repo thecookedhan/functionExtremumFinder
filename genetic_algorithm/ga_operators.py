@@ -3,7 +3,7 @@ from .classes import Population
 import random
 
 # === MUTATION ===
-def uniform_mutation(individual: Individual, mutation_rate: float, bounds: list[tuple[float, float]]):
+def uniform_mutation(individual: Individual, mutation_rate: float, bounds: list[float]):
     """
     Randomly change each gene with a given mutation rate to a random value within specified bounds
     """
@@ -11,7 +11,7 @@ def uniform_mutation(individual: Individual, mutation_rate: float, bounds: list[
         if random.random() < mutation_rate:
             individual.genome[locus] = random.uniform(bounds[0], bounds[1])
 
-def gaussian_mutation(individual: Individual, mutation_rate: float, mutation_scale: float, bounds: list[tuple[float, float]]):
+def gaussian_mutation(individual: Individual, mutation_rate: float, mutation_scale: float, bounds: list[float]):
     """
     Randomly change each gene with a given mutation rate by adding a random value from a Gaussian distribution, 
     ensuring that the mutated gene remains within specified bounds
@@ -22,19 +22,28 @@ def gaussian_mutation(individual: Individual, mutation_rate: float, mutation_sca
             individual.genome[locus] = max(bounds[0], min(mutated_gene, bounds[1]))
 
 # === SELECTION ===
-def tournament_selection(population: Population, tournament_size: int) -> Individual: # select the best individual from a random subset of the population based on fitness
+def tournament_selection(population: Population, tournament_size: int) -> Individual:
+    """
+    Select the best individual from a random subset of the population based on fitness
+    """
     tournament_group = random.sample(population.individuals, tournament_size)
     best_individual = min(tournament_group, key=lambda individual: individual.fitness)
 
     return best_individual.copy()
 
-def best_selection(population: Population, best_percentage: float) -> Individual: # select a percentage of the best individuals from the population based on fitness
-    population.sort(descending = False)
+def best_selection(population: Population, best_percentage: float) -> Individual:
+    """
+    Select a percentage of the best individuals from the population based on fitness
+    """
+    population.sort(descending=False)
     best_individuals_start_index = int(len(population) * best_percentage)
 
     return random.choice(population.individuals[:best_individuals_start_index]).copy()
 
-def roulette_selection(population: Population) -> Individual: # select an individual with probability proportional to its fitness
+def roulette_selection(population: Population) -> Individual:
+    """
+    Select an individual with probability proportional to its fitness
+    """
     min_population_fitness = min(individual.fitness for individual in population.individuals)
     shift = abs(min_population_fitness) + 1e-6
 
@@ -48,7 +57,7 @@ def roulette_selection(population: Population) -> Individual: # select an indivi
             return individual.copy()
 
 # === CROSSOVER ===
-def arithmetic_crossover(parent1: Individual, parent2: Individual, bounds: list[tuple[float, float]]) -> tuple[Individual, Individual]:
+def arithmetic_crossover(parent1: Individual, parent2: Individual) -> tuple[Individual, Individual]:
     """
     Create two offsprings by combining genes of a parents with alpha weight, where alpha determines a contribution of each parent to an offspring's genome
     """
@@ -66,7 +75,7 @@ def average_crossover(parents: list[Individual]) -> Individual:
 
     return Individual(child_genome)
 
-def alpha_blend_crossover(parent1: Individual, parent2: Individual, alpha: float, bounds: list[tuple[float, float]]) -> tuple[Individual, Individual]:
+def alpha_blend_crossover(parent1: Individual, parent2: Individual, alpha: float, bounds: list[float]) -> tuple[Individual, Individual]:
     """
     Create two offsprings by combining genes of a parents with alpha weight, where alpha extends 
     a range of possible gene values beyond the defined one by parents' genes
@@ -79,7 +88,7 @@ def alpha_blend_crossover(parent1: Individual, parent2: Individual, alpha: float
 
     return Individual(child1_genome_after_bounds_checking), Individual(child2_genome_after_bounds_checking)
 
-def alpha_beta_blend_crossover(parent1: Individual, parent2: Individual, alpha: float, beta: float, bounds: list[tuple[float, float]]) -> tuple[Individual, Individual]:
+def alpha_beta_blend_crossover(parent1: Individual, parent2: Individual, alpha: float, beta: float, bounds: list[float]) -> tuple[Individual, Individual]:
     """
     Create two offspring by combining genes of a parents with alpha and beta weights, where alpha and beta extend
     a range of possible gene values beyond the defined one by parents' genes
@@ -91,3 +100,18 @@ def alpha_beta_blend_crossover(parent1: Individual, parent2: Individual, alpha: 
     child2_genome_after_bounds_checking = [max(bounds[0], min(gene, bounds[1])) for gene in child2_genome]
 
     return Individual(child1_genome_after_bounds_checking), Individual(child2_genome_after_bounds_checking)
+
+def linear_crossover(parent1: Individual, parent2: Individual, bounds: list[float], fitness_function: callable) -> tuple[Individual, Individual, Individual]:
+    Z = Individual([0.5 * (gene1 + gene2) for gene1, gene2 in zip(parent1.genome, parent2.genome)])
+    V = Individual([1.5 * gene1 - 0.5 * gene2 for gene1, gene2 in zip(parent1.genome, parent2.genome)])
+    W = Individual([-0.5 * gene1 + 1.5 * gene2 for gene1, gene2 in zip(parent1.genome, parent2.genome)])
+
+    offspring = [Z, V, W]
+
+    for child in offspring:
+        child.genome = [max(bounds[0], min(gene, bounds[1])) for gene in child.genome]
+        child.evaluate(fitness_function)
+
+    offspring.sort(key=lambda ind: ind.fitness)
+
+    return offspring[0], offspring[1]
