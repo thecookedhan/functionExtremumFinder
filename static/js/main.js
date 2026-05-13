@@ -41,12 +41,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const togglePlay = () => {
         if (!audio) return;
+        
+        const btsImg = document.getElementById('bts-easter-egg');
+        const githubBtn = document.getElementById('github-link');
+        const versionDate = document.getElementById('version-info');
+
         if (audio.paused) {
-            audio.play().catch(e => console.log("Kliknij ikonę, by włączyć audio"));
+            audio.play().catch(e => console.log("Błąd:", e));
             eggBtn?.classList.add('animate-bounce');
+            
+            if (btsImg) {
+                btsImg.classList.remove('opacity-0', 'translate-y-10');
+                btsImg.classList.add('opacity-100', 'translate-y-0');
+            }
+            githubBtn?.classList.add('blur-md', 'pointer-events-none', 'transition-all', 'duration-500');
+            versionDate?.classList.add('blur-sm', 'transition-all', 'duration-500');
+
         } else {
             audio.pause();
             eggBtn?.classList.remove('animate-bounce');
+            
+            if (btsImg) {
+                btsImg.classList.add('opacity-0', 'translate-y-10');
+                btsImg.classList.remove('opacity-100', 'translate-y-0');
+            }
+            githubBtn?.classList.remove('blur-md', 'pointer-events-none');
+            versionDate?.classList.remove('blur-sm');
         }
     };
 
