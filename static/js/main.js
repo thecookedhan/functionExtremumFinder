@@ -53,10 +53,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const changeTrack = (direction) => {
         if (!audio) return;
         currentTrackIndex = (currentTrackIndex + direction + playlist.length) % playlist.length;
-        const wasPlaying = !audio.paused;
         loadTrack(currentTrackIndex);
-        if (wasPlaying) audio.play();
+        audio.play().catch(e => console.log("Autoplay zablokowany lub błąd ładowania"));
+        eggBtn?.classList.add('animate-bounce');
     };
+
+    audio?.addEventListener('ended', () => {
+        console.log("Koniec utworu, zmieniam na następny...");
+        changeTrack(1);
+    });
 
     eggBtn?.addEventListener('click', togglePlay);
     nextBtn?.addEventListener('click', () => changeTrack(1));
@@ -133,27 +138,27 @@ document.addEventListener('DOMContentLoaded', () => {
         selectionSelect?.addEventListener('change', updateSelection);
 
         // obsługa krzyżowania
-const crossoverSelect = document.getElementById('crossover-select');
-const updateCrossover = () => {
-    const val = crossoverSelect?.value;
-    const alphaDiv = document.getElementById('blend-alpha-params');
-    const betaDiv = document.getElementById('blend-beta-params');
-    
-    // Pokaż alpha dla obu metod blend, beta tylko dla alpha-beta
-    alphaDiv?.classList.toggle('hidden', val === 'arithmetic');
-    betaDiv?.classList.toggle('hidden', val !== 'alpha_beta_blend');
-};
-crossoverSelect?.addEventListener('change', updateCrossover);
+        const crossoverSelect = document.getElementById('crossover-select');
+        const updateCrossover = () => {
+            const val = crossoverSelect?.value;
+            const probContainer = document.getElementById('crossover-prob-container');
+            const alphaDiv = document.getElementById('blend-alpha-params');
+            const betaDiv = document.getElementById('blend-beta-params');
+            
+            if (probContainer) {
+                probContainer.classList.remove('hidden');
+            }
 
-const mutationSelect = document.getElementById('mutation-select');
-const updateMutation = () => {
-    const val = mutationSelect?.value;
-    const gaussianDiv = document.getElementById('gaussian-params');
-    
-    gaussianDiv?.classList.toggle('hidden', val !== 'gaussian');
-};
-
-mutationSelect?.addEventListener('change', updateMutation);
+            if (alphaDiv) {
+                alphaDiv.classList.toggle('hidden', val !== 'alpha_blend' && val !== 'alpha_beta_blend');
+            }
+            
+            if (betaDiv) {
+                betaDiv.classList.toggle('hidden', val !== 'alpha_beta_blend');
+            }
+        };
+        
+        crossoverSelect?.addEventListener('change', updateCrossover);
 
         // obsługa strategii elitarnej (pojawianie się pola pod przełącznikiem)
         const eliteToggle = document.getElementById('elite-toggle');
