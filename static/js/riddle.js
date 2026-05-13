@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const KOD = "613";
+    const _val = "NjEz"; 
     
     const trigger = document.getElementById('riddle-trigger');
     const modal = document.getElementById('riddle-modal');
@@ -16,7 +16,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     input?.addEventListener('input', (e) => {
         e.target.value = e.target.value.replace(/\D/g, '');
-        if (e.target.value.length > 3) e.target.value = e.target.value.slice(0, 3);
+        if (e.target.value.length > 3) {
+            e.target.value = e.target.value.slice(0, 3);
+        }
     });
 
     const closeModal = () => {
@@ -31,16 +33,17 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const checkCode = () => {
-        if (input.value === KOD) {
+        if (btoa(input.value) === _val) {
             if (audio) {
                 audio.src = "/static/music/hidden.mp3";
-                audio.play().catch(e => console.log("Błąd odtwarzania:", e));
+                audio.play().catch(e => console.log("Interakcja wymagana:", e));
                 
                 const eggBtn = document.getElementById('egg-btn');
                 eggBtn?.classList.add('animate-bounce');
                 if (eggBtn) {
                     eggBtn.style.background = "linear-gradient(135deg, #a855f7 0%, #7e22ce 100%)";
                 }
+
                 if (btsImg) {
                     btsImg.classList.remove('opacity-0', 'translate-y-10');
                     btsImg.classList.add('opacity-100', 'translate-y-0');
@@ -72,8 +75,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     submitBtn?.addEventListener('click', checkCode);
     closeBtn?.addEventListener('click', closeModal);
-    input?.addEventListener('keypress', (e) => { if (e.key === 'Enter') checkCode(); });
+
+    input?.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') checkCode();
+    });
+
     modal?.addEventListener('click', (e) => {
-        if (e.target.classList.contains('bg-slate-900/40')) closeModal();
+        if (e.target.classList.contains('bg-slate-900/40')) {
+            closeModal();
+        }
     });
 });
